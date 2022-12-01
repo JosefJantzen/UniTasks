@@ -22,6 +22,7 @@ FROM gcr.io/distroless/base-debian10
 WORKDIR /
 COPY backend/server.crt ./
 COPY backend/server.key ./
+COPY backend/DB-initial.pgsql ./
 
 COPY --from=build /uni-tasks /uni-tasks
 

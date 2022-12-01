@@ -34,13 +34,6 @@ func initServer() {
 		fmt.Fprintln(w, "Hi")
 	})
 
-	/*myRouter.Handle("/tasks", isAuthorized(returnAllTasks))
-
-	myRouter.Handle("/tasks/{id}", isAuthorized(returnSingleTask))
-	myRouter.Handle("/task", isAuthorized(createNewTask)).Methods("POST")
-	myRouter.Handle("/task/{id}", isAuthorized(deleteTask)).Methods("DELETE")
-	myRouter.Handle("/task/{id}", isAuthorized(updateTask)).Methods("PUT")*/
-
 	//  Start HTTP
 	go func() {
 		err_http := http.ListenAndServe(":8080", myRouter)
@@ -57,7 +50,6 @@ func initServer() {
 			log.Fatal("Web server (HTTPS): ", err_https)
 		}
 	}()
-
 }
 
 func initStore() (*sql.DB, error) {
@@ -87,18 +79,14 @@ func initStore() (*sql.DB, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), e_mail STRING, pwd STRING);"); err != nil {
+	body, err := os.ReadFile("DB-initial.pgsql")
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
+	if _, err := db.Exec(string(body)); err != nil {
 		return nil, err
 	}
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS recurring_tasks (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name STRING, interval INTERVAL, parentUser UUID REFERENCES users(id));"); err != nil {
-		return nil, err
-	}
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS tasks (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name STRING, due TIME, description STRING, parentTask UUID REFERENCES recurring_tasks(id));"); err != nil {
-		return nil, err
-	}
+
 	fmt.Println("End")
 	return db, err
 }

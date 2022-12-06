@@ -17,10 +17,10 @@ func InitServer(dbService *database.DBService) {
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 
-	myRouter.HandleFunc("/signin", apiService.SignIn).Methods("POST")
-	myRouter.HandleFunc("/signup", apiService.SignUp).Methods("POST")
-	myRouter.HandleFunc("/logout", auth.Logout).Methods("POST")
-	myRouter.HandleFunc("/refresh", auth.Refresh).Methods("POST")
+	myRouter.HandleFunc("/v1/api/signin", apiService.SignIn).Methods("POST")
+	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("POST")
+	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("POST")
+	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("POST")
 	myRouter.Handle("/", auth.Auth(apiService.Welcome)).Methods("GET")
 	//myRouter.Handle("/", auth.Auth(Welcome))
 

@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb"
 	"github.com/google/uuid"
@@ -92,15 +91,14 @@ func (s *DBService) InsertUser(email string, pwd string) uuid.UUID {
 			).Scan(&id)
 
 			if err != nil {
-				fmt.Println("1", err)
 				return err
 			}
 			return nil
 		})
 
 	if err != nil {
-		fmt.Println("2", err)
 		return uuid.Nil
 	}
+
 	return id
 }

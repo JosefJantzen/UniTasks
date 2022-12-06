@@ -1,8 +1,11 @@
 package database
 
 import (
+	"context"
+	"database/sql"
 	"time"
 
+	"github.com/cockroachdb/cockroach-go/v2/crdb"
 	"github.com/google/uuid"
 )
 
@@ -60,4 +63,30 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
 		tasks = append(tasks, task)
 	}
 	return tasks
+}
+
+func (s *DBService) InsertTask(task Task) uuid.UUID {
+
+	var id uuid.UUID
+	err := crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			err := tx.QueryRow(
+				"INSERT INTO tasks (name, due, description, parentUser) VALUES ($1, $2, $3, $4) RETURNING id",
+				task.Name,
+				task.Due,
+				task.Description,
+				task.ParentUser,
+			).Scan(&id)
+
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+
+	if err != nil {
+		return uuid.Nil
+	}
+
+	return id
 }

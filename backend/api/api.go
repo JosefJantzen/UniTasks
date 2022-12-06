@@ -17,16 +17,19 @@ func InitServer(dbService *database.DBService) {
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 
-	myRouter.HandleFunc("/v1/api/signin", apiService.SignIn).Methods("GET")
-	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("GET")
+	myRouter.HandleFunc("/v1/api/signin", apiService.SignIn).Methods("POST")
+	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("POST")
 	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("GET")
 	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("GET")
 	myRouter.Handle("/", auth.Auth(apiService.Welcome)).Methods("GET")
 
 	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
 	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
+	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.InsertTask)).Methods("POST")
+
 	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.GetRecurringTaskById)).Methods("GET")
 	myRouter.Handle("/v1/api/recurring-tasks", auth.Auth(apiService.GetRecurringTasksByUser)).Methods("GET")
+	myRouter.Handle("/v1/api/recurring-tasks", auth.Auth(apiService.InsertRecurringTasks)).Methods("POST")
 	//myRouter.Handle("/", auth.Auth(Welcome))
 
 	//  Start HTTP

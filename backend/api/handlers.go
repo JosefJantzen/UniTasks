@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -70,6 +71,16 @@ func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, clai
 	json.NewEncoder(w).Encode(tasks)
 }
 
+func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	reqBody, _ := ioutil.ReadAll(r.Body)
+
+	var task database.Task
+	json.Unmarshal(reqBody, &task)
+	task.ParentUser = claims.Id
+	id := s.DB.InsertTask(task)
+	fmt.Fprint(w, id)
+}
+
 func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	vars := mux.Vars(r)
 	id, err := uuid.Parse(vars["id"])
@@ -100,4 +111,8 @@ func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Requ
 
 	w.Header().Add("Content-Type", "text/json; charset=utf-8")
 	json.NewEncoder(w).Encode(tasks)
+}
+
+func (s *ApiService) InsertRecurringTasks(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+
 }

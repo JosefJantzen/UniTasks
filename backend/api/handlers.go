@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -21,7 +22,18 @@ func (s *ApiService) Welcome(w http.ResponseWriter, r *http.Request, claims *aut
 }
 
 func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
-	auth.SignIn(w, r, s.DB)
+	var creds auth.Credentials
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		fmt.Println("2", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	auth.SignIn(w, r, s.DB, creds)
+}
+
+func (s *ApiService) SignUp(w http.ResponseWriter, r *http.Request) {
+	auth.SignUp(w, r, s.DB)
 }
 
 func (s *ApiService) GetUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

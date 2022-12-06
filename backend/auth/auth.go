@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -19,6 +20,13 @@ var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 type Credentials struct {
 	EMail string `json:"eMail"`
 	Pwd   string `json:"pwd"`
+}
+
+func (c Credentials) empty() bool {
+	if c.EMail == "" || c.Pwd == "" {
+		return true
+	}
+	return false
 }
 
 type Claims struct {
@@ -80,14 +88,7 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 	})
 }
 
-func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService) {
-	var creds Credentials
-
-	err := json.NewDecoder(r.Body).Decode(&creds)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds Credentials) {
 
 	user := s.GetUserByMail(creds.EMail)
 	if user == nil {
@@ -104,6 +105,48 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 
 	claims := &Claims{
 		Id: user.Id,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	tokenString := genJWT(claims, w)
+	if tokenString == "" {
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   tokenString,
+		Expires: expirationTime,
+	})
+}
+
+func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
+	var creds Credentials
+
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		fmt.Println("1")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if s.CheckMailUsed(creds.EMail) {
+		SignIn(w, r, s, creds)
+		return
+	}
+
+	pwd, err := hashPassword(creds.Pwd)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	id := s.InsertUser(creds.EMail, pwd)
+
+	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
+
+	claims := &Claims{
+		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},

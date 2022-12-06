@@ -18,6 +18,7 @@ func InitServer(dbService *database.DBService) {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/signin", apiService.SignIn)
+	myRouter.HandleFunc("/signup", apiService.SignUp)
 	myRouter.HandleFunc("/logout", auth.Logout)
 	myRouter.HandleFunc("/refresh", auth.Refresh)
 	myRouter.Handle("/", auth.Auth(apiService.Welcome))

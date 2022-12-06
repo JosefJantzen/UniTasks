@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     parentUser UUID REFERENCES users(id)
 );
 
-INSERT INTO users (id, e_mail, pwd) 
+/*INSERT INTO users (id, e_mail, pwd) 
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10333', 
     'admin@admin.com', 
@@ -43,4 +43,4 @@ VALUES (
     'This is a normal task description', 
     '2023-01-01 15:15:35', 
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
-);
+);*/

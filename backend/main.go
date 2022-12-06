@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	api.InitServer()
-	database.InitDB()
+	dbService := database.InitDB()
+	api.InitServer(dbService)
 	fmt.Println("Completly Started")
 	select {}
 }

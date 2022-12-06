@@ -7,16 +7,21 @@ import (
 
 	"github.com/gorilla/mux"
 	"unitasks.josefjantzen.de/backend/auth"
+	"unitasks.josefjantzen.de/backend/database"
 )
 
-func InitServer() {
-	fmt.Println("Starting Server: ")
+func InitServer(dbService *database.DBService) {
+	fmt.Print("Starting Server: ")
+
+	apiService := NewApiService(dbService)
+
 	myRouter := mux.NewRouter().StrictSlash(true)
 
-	myRouter.Handle("/", auth.Auth(Welcome))
-	myRouter.HandleFunc("/signin", auth.Signin)
+	myRouter.HandleFunc("/signin", apiService.SignIn)
 	myRouter.HandleFunc("/logout", auth.Logout)
 	myRouter.HandleFunc("/refresh", auth.Refresh)
+	myRouter.Handle("/", auth.Auth(apiService.Welcome))
+	//myRouter.Handle("/", auth.Auth(Welcome))
 
 	//  Start HTTP
 	go func() {

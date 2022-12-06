@@ -2,33 +2,38 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+	"unitasks.josefjantzen.de/backend/database"
 )
 
 var expireMin = 5
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
-var users = map[string]string{
-	"test1@test.com": "password1",
-	"test2@test.com": "password2",
-}
-
-type User struct {
-	Id    uuid.UUID `json:"id"`
-	EMail string    `json:"eMail"`
-	Pwd   string    `json:"pwd"`
+type Credentials struct {
+	EMail string `json:"eMail"`
+	Pwd   string `json:"pwd"`
 }
 
 type Claims struct {
 	Id uuid.UUID `json:"id"`
 	jwt.RegisteredClaims
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func genJWT(claims *Claims, w http.ResponseWriter) string {
@@ -75,8 +80,8 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 	})
 }
 
-func Signin(w http.ResponseWriter, r *http.Request) {
-	var creds User
+func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService) {
+	var creds Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -84,12 +89,13 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO: querry DB for user data
-	expectedPassword, ok := users[creds.EMail]
+	user := s.GetUserByMail(creds.EMail)
+	if user == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
-	fmt.Println(expectedPassword, ok, creds.Pwd)
-
-	if !ok || expectedPassword != creds.Pwd {
+	if !checkPasswordHash(creds.Pwd, user.Pwd) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -97,7 +103,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
 
 	claims := &Claims{
-		Id: creds.Id,
+		Id: user.Id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},

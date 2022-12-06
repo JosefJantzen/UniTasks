@@ -9,7 +9,15 @@ import (
 	"github.com/cenkalti/backoff"
 )
 
-func InitDB() (*sql.DB, error) {
+type DBService struct {
+	db *sql.DB
+}
+
+func NewDBService(d *sql.DB) *DBService {
+	return &DBService{db: d}
+}
+
+func InitDB() *DBService {
 	fmt.Print("Start DB init: ")
 	pgConnString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
 		os.Getenv("PGHOST"),
@@ -34,21 +42,23 @@ func InitDB() (*sql.DB, error) {
 	if err != nil {
 		fmt.Println("Err23: ")
 		fmt.Println(err)
-		return nil, err
+		return nil
 	}
 	body, err := os.ReadFile("DB-initial.pgsql")
 	if err != nil {
 		log.Fatalf("unable to read file: %v", err)
 	}
 	if _, err := db.Exec(string(body)); err != nil {
-		return nil, err
+		fmt.Println("Err345 ", err)
+		return nil
 	}
 
 	if err != nil {
 		fmt.Print("Error: ")
 		fmt.Println(fmt.Printf("failed to initialise the store: %s", err))
 	}
-	defer db.Close()
 
-	return db, err
+	service := NewDBService(db)
+	fmt.Println("Finished DB init")
+	return service
 }

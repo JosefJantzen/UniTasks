@@ -114,5 +114,11 @@ func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Requ
 }
 
 func (s *ApiService) InsertRecurringTasks(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	reqBody, _ := ioutil.ReadAll(r.Body)
 
+	var task database.RecurringTask
+	json.Unmarshal(reqBody, &task)
+	task.ParentUser = claims.Id
+	id := s.DB.InsertRecurringTask(task)
+	fmt.Fprint(w, id)
 }

@@ -20,8 +20,11 @@ func InitServer(dbService *database.DBService) {
 	myRouter.HandleFunc("/v1/api/signin", apiService.SignIn).Methods("POST")
 	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("POST")
 	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("POST")
-	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("POST")
+	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("GET")
 	myRouter.Handle("/", auth.Auth(apiService.Welcome)).Methods("GET")
+
+	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("POST")
+	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("POST")
 	//myRouter.Handle("/", auth.Auth(Welcome))
 
 	//  Start HTTP

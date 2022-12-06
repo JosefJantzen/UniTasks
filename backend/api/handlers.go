@@ -35,7 +35,3 @@ func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
 func (s *ApiService) SignUp(w http.ResponseWriter, r *http.Request) {
 	auth.SignUp(w, r, s.DB)
 }
-
-func (s *ApiService) GetUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
-
-}

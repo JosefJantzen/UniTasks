@@ -17,11 +17,11 @@ func InitServer(dbService *database.DBService) {
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 
-	myRouter.HandleFunc("/signin", apiService.SignIn)
-	myRouter.HandleFunc("/signup", apiService.SignUp)
-	myRouter.HandleFunc("/logout", auth.Logout)
-	myRouter.HandleFunc("/refresh", auth.Refresh)
-	myRouter.Handle("/", auth.Auth(apiService.Welcome))
+	myRouter.HandleFunc("/signin", apiService.SignIn).Methods("POST")
+	myRouter.HandleFunc("/signup", apiService.SignUp).Methods("POST")
+	myRouter.HandleFunc("/logout", auth.Logout).Methods("POST")
+	myRouter.HandleFunc("/refresh", auth.Refresh).Methods("POST")
+	myRouter.Handle("/", auth.Auth(apiService.Welcome)).Methods("GET")
 	//myRouter.Handle("/", auth.Auth(Welcome))
 
 	//  Start HTTP

@@ -9,6 +9,7 @@ COPY backend/go.sum ./
 
 RUN go mod download
 
+ADD backend/. /go/src/app/
 COPY /backend/*.go ./
 
 RUN go build -o /uni-tasks

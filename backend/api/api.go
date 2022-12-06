@@ -25,6 +25,8 @@ func InitServer(dbService *database.DBService) {
 
 	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("POST")
 	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("POST")
+	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.GetRecurringTaskById)).Methods("POST")
+	myRouter.Handle("/v1/api/recurring-tasks", auth.Auth(apiService.GetRecurringTasksByUser)).Methods("POST")
 	//myRouter.Handle("/", auth.Auth(Welcome))
 
 	//  Start HTTP

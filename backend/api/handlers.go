@@ -61,7 +61,38 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 
 func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	tasks := s.DB.GetTasksByUser(claims.Id)
-	fmt.Println("t2 ", tasks)
+	if tasks == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	json.NewEncoder(w).Encode(tasks)
+}
+
+func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	task := s.DB.GetRecurringTaskById(id)
+	if task == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if task.ParentUser != claims.Id {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	json.NewEncoder(w).Encode(task)
+}
+
+func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	tasks := s.DB.GetRecurringTasksByUser(claims.Id)
 	if tasks == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

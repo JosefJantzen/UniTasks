@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS recurring_tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
     name STRING, 
     description STRING, 
-    interval INTERVAL, 
+    interval INT, 
     parentUser UUID REFERENCES users(id)
 );
 
@@ -30,9 +30,9 @@ VALUES (
 INSERT INTO recurring_tasks (id, name, description, interval, parentUser)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10444', 
-    'Test-Recurring-Tas', 
+    'Test-Recurring-Task', 
     'This is a recurring task.', 
-    '7d', 
+    7, 
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
 );
 

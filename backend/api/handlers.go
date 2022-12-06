@@ -7,8 +7,6 @@ import (
 	"unitasks.josefjantzen.de/backend/auth"
 )
 
-func Welcome(w http.ResponseWriter, r *http.Request) {
-	claims := &auth.Claims{}
-	auth.Auth(w, r, claims)
+func Welcome(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Id)))
 }

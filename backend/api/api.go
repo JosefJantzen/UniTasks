@@ -13,7 +13,7 @@ func InitServer() {
 	fmt.Println("Starting Server: ")
 	myRouter := mux.NewRouter().StrictSlash(true)
 
-	myRouter.HandleFunc("/", Welcome)
+	myRouter.Handle("/", auth.Auth(Welcome))
 	myRouter.HandleFunc("/signin", auth.Signin)
 	myRouter.HandleFunc("/logout", auth.Logout)
 	myRouter.HandleFunc("/refresh", auth.Refresh)

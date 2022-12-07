@@ -111,3 +111,17 @@ func (s *DBService) UpdateRecurringTask(task RecurringTask) error {
 	}
 	return nil
 }
+
+func (s *DBService) DeleteRecurringTask(id uuid.UUID, userId uuid.UUID) error {
+	res, err := s.db.Query(
+		"DELETE FROM recurring_tasks WHERE id = $1 AND parentUser=$2",
+		id,
+		userId,
+	)
+	if err != nil {
+		return err
+	}
+
+	defer res.Close()
+	return err
+}

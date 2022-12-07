@@ -20,6 +20,11 @@ func NewApiService(s *database.DBService) *ApiService {
 	return &ApiService{DB: s}
 }
 
+type AllTasks struct {
+	Tasks          []database.Task          `json:"tasks"`
+	RecurringTasks []database.RecurringTask `json:"recurringTasks"`
+}
+
 func (s *ApiService) Welcome(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Id)))
 }
@@ -215,4 +220,23 @@ func (s *ApiService) DeleteRecurringTask(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (s *ApiService) GetAllTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	tasks := s.DB.GetTasksByUser(claims.Id)
+	if tasks == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	recurringTasks := s.DB.GetRecurringTasksByUser(claims.Id)
+	if recurringTasks == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	allTasks := AllTasks{Tasks: tasks, RecurringTasks: recurringTasks}
+
+	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	json.NewEncoder(w).Encode(allTasks)
 }

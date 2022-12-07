@@ -77,10 +77,7 @@ func (s *DBService) InsertTask(task Task) uuid.UUID {
 				task.ParentUser,
 			).Scan(&id)
 
-			if err != nil {
-				return err
-			}
-			return nil
+			return err
 		})
 
 	if err != nil {
@@ -105,4 +102,18 @@ func (s *DBService) UpdateTask(task Task) error {
 		return err
 	}
 	return nil
+}
+
+func (s *DBService) DeleteTask(id uuid.UUID, userId uuid.UUID) error {
+	res, err := s.db.Query(
+		"DELETE FROM tasks WHERE id = $1 AND parentUser=$2",
+		id,
+		userId,
+	)
+	if err != nil {
+		return err
+	}
+
+	defer res.Close()
+	return err
 }

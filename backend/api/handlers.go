@@ -133,6 +133,22 @@ func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request
 	json.NewEncoder(w).Encode(task)
 }
 
+func (s *ApiService) DeleteTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = s.DB.DeleteTask(id, claims.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	tasks := s.DB.GetRecurringTasksByUser(claims.Id)
 	if tasks == nil {
@@ -183,4 +199,8 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+}
+
+func (s *ApiService) DeleteRecurringTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+
 }

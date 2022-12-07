@@ -16,6 +16,11 @@ type ApiService struct {
 	DB *database.DBService
 }
 
+type EMail struct {
+	Id   uuid.UUID `json:"id"`
+	Mail string    `json:"eMail"`
+}
+
 func NewApiService(s *database.DBService) *ApiService {
 	return &ApiService{DB: s}
 }
@@ -41,6 +46,24 @@ func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (s *ApiService) SignUp(w http.ResponseWriter, r *http.Request) {
 	auth.SignUp(w, r, s.DB)
+}
+
+func (s *ApiService) UpdateMail(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	var mail EMail
+	err := json.NewDecoder(r.Body).Decode(&mail)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if mail.Id != claims.Id {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = s.DB.UpdateMail(claims.Id, mail.Mail)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (s *ApiService) DeleteUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

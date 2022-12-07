@@ -87,7 +87,7 @@ func (s *DBService) InsertTask(task Task) uuid.UUID {
 }
 
 func (s *DBService) UpdateTask(task Task) error {
-	err := crdb.ExecuteTx(context.Background(), s.db, nil,
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
 				"UPDATE tasks SET name = $1, due = $2, description = $3 WHERE id = $4",
@@ -98,10 +98,6 @@ func (s *DBService) UpdateTask(task Task) error {
 			)
 			return err
 		})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (s *DBService) DeleteTask(id uuid.UUID, userId uuid.UUID) error {

@@ -24,6 +24,8 @@ func InitServer(dbService *database.DBService) {
 	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("GET")
 	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("GET")
 	myRouter.Handle("/v1/api/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
+	myRouter.Handle("/v1/api/updateMail", auth.Auth(apiService.UpdateMail)).Methods("POST")
+	//myRouter.Handle("/v1/api/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("POST")
 
 	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
 	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
@@ -38,10 +40,6 @@ func InitServer(dbService *database.DBService) {
 	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.DeleteRecurringTask)).Methods("DELETE")
 
 	myRouter.Handle("/v1/api/all", auth.Auth(apiService.GetAllTasksByUser)).Methods("GET")
-
-	/**
-	* TODO: Update user
-	 */
 
 	//  Start HTTP
 	go func() {

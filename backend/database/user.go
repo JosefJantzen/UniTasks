@@ -103,6 +103,18 @@ func (s *DBService) InsertUser(email string, pwd string) uuid.UUID {
 	return id
 }
 
+func (s *DBService) UpdateMail(id uuid.UUID, mail string) error {
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"UPDATE users SET e_mail = $1 WHERE id = $2",
+				mail,
+				id,
+			)
+			return err
+		})
+}
+
 func (s *DBService) DeleteUser(id uuid.UUID) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {

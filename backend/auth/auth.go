@@ -34,6 +34,11 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type Password struct {
+	Id  uuid.UUID `json:"id"`
+	Pwd string    `json:"pwd"`
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -127,7 +132,6 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		fmt.Println("1")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -139,6 +143,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 	pwd, err := hashPassword(creds.Pwd)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	id := s.InsertUser(creds.EMail, pwd)
@@ -162,6 +167,20 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
+}
+
+func UpdatePwd(w http.ResponseWriter, r *http.Request, s *database.DBService, p Password) {
+	pwd, err := hashPassword(p.Pwd)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = s.UpdatePwd(p.Id, pwd)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {

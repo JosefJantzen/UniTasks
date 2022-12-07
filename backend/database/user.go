@@ -115,6 +115,18 @@ func (s *DBService) UpdateMail(id uuid.UUID, mail string) error {
 		})
 }
 
+func (s *DBService) UpdatePwd(id uuid.UUID, pwd string) error {
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"UPDATE users SET pwd = $1 WHERE id = $2",
+				pwd,
+				id,
+			)
+			return err
+		})
+}
+
 func (s *DBService) DeleteUser(id uuid.UUID) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {

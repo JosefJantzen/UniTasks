@@ -66,6 +66,20 @@ func (s *ApiService) UpdateMail(w http.ResponseWriter, r *http.Request, claims *
 	}
 }
 
+func (s *ApiService) UpdatePwd(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	var pwd auth.Password
+	err := json.NewDecoder(r.Body).Decode(&pwd)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if pwd.Id != claims.Id {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	auth.UpdatePwd(w, r, s.DB, pwd)
+}
+
 func (s *ApiService) DeleteUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	var creds auth.Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)

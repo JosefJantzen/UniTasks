@@ -23,7 +23,7 @@ func InitServer(dbService *database.DBService) {
 	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("POST")
 	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("GET")
 	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("GET")
-	//myRouter.Handle("/v1/api/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
+	myRouter.Handle("/v1/api/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
 
 	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
 	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
@@ -40,8 +40,7 @@ func InitServer(dbService *database.DBService) {
 	myRouter.Handle("/v1/api/all", auth.Auth(apiService.GetAllTasksByUser)).Methods("GET")
 
 	/**
-	* TODO: get both recurring and normal tasks for one user
-	* TODO: Delete user with all it's data
+	* TODO: Update user
 	 */
 
 	//  Start HTTP

@@ -102,3 +102,28 @@ func (s *DBService) InsertUser(email string, pwd string) uuid.UUID {
 
 	return id
 }
+
+func (s *DBService) DeleteUser(id uuid.UUID) error {
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"DELETE FROM recurring_tasks WHERE parentUser=$1;",
+				id,
+			)
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(
+				"DELETE FROM tasks WHERE parentUser=$1",
+				id,
+			)
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(
+				"DELETE FROM users WHERE id=$1",
+				id,
+			)
+			return err
+		})
+}

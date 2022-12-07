@@ -219,3 +219,25 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Expires: expirationTime,
 	})
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService) {
+	user := s.GetUserByMail(creds.EMail)
+	if user == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	if !checkPasswordHash(creds.Pwd, user.Pwd) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	err := s.DeleteUser(user.Id)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	Logout(w, r)
+}

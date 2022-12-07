@@ -33,7 +33,6 @@ func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
 	var creds auth.Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		fmt.Println("2", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -42,6 +41,16 @@ func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (s *ApiService) SignUp(w http.ResponseWriter, r *http.Request) {
 	auth.SignUp(w, r, s.DB)
+}
+
+func (s *ApiService) DeleteUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	var creds auth.Credentials
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	auth.DeleteUser(w, r, creds, s.DB)
 }
 
 func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

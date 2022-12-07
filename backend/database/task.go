@@ -66,7 +66,6 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
 }
 
 func (s *DBService) InsertTask(task Task) uuid.UUID {
-
 	var id uuid.UUID
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
@@ -87,6 +86,23 @@ func (s *DBService) InsertTask(task Task) uuid.UUID {
 	if err != nil {
 		return uuid.Nil
 	}
-
 	return id
+}
+
+func (s *DBService) UpdateTask(task Task) error {
+	err := crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"UPDATE tasks SET name = $1, due = $2, description = $3 WHERE id = $4",
+				task.Name,
+				task.Due,
+				task.Description,
+				task.Id,
+			)
+			return err
+		})
+	if err != nil {
+		return err
+	}
+	return nil
 }

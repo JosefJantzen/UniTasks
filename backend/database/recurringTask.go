@@ -91,6 +91,23 @@ func (s *DBService) InsertRecurringTask(task RecurringTask) uuid.UUID {
 	if err != nil {
 		return uuid.Nil
 	}
-
 	return id
+}
+
+func (s *DBService) UpdateRecurringTask(task RecurringTask) error {
+	err := crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"UPDATE recurring_tasks SET name = $1, interval = $2, description = $3 WHERE id = $4",
+				task.Name,
+				task.Interval,
+				task.Description,
+				task.Id,
+			)
+			return err
+		})
+	if err != nil {
+		return err
+	}
+	return nil
 }

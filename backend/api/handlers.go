@@ -78,7 +78,38 @@ func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *
 	json.Unmarshal(reqBody, &task)
 	task.ParentUser = claims.Id
 	id := s.DB.InsertTask(task)
+	if id == uuid.Nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	fmt.Fprint(w, id)
+}
+
+func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+
+	var task database.Task
+	json.Unmarshal(reqBody, &task)
+
+	task.Id = id
+	task.ParentUser = claims.Id
+
+	if task.ParentUser != claims.Id {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	err = s.DB.UpdateTask(task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
@@ -113,12 +144,43 @@ func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Requ
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func (s *ApiService) InsertRecurringTasks(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+func (s *ApiService) InsertRecurringTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
 	var task database.RecurringTask
 	json.Unmarshal(reqBody, &task)
 	task.ParentUser = claims.Id
 	id := s.DB.InsertRecurringTask(task)
+	if id == uuid.Nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	fmt.Fprint(w, id)
+}
+
+func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+
+	var task database.RecurringTask
+	json.Unmarshal(reqBody, &task)
+
+	task.Id = id
+	task.ParentUser = claims.Id
+
+	if task.ParentUser != claims.Id {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	err = s.DB.UpdateRecurringTask(task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }

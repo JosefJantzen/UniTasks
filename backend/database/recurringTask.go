@@ -14,6 +14,7 @@ type RecurringTask struct {
 	Name        string    `json:"name"`
 	Description string    `json:"desc"`
 	Start       time.Time `json:"start"`
+	End         time.Time `json:"end"`
 	Interval    int       `json:"interval"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
@@ -33,15 +34,16 @@ func (s *DBService) GetRecurringTaskById(id uuid.UUID) *RecurringTask {
 	var name string
 	var desc string
 	var start time.Time
+	var end time.Time
 	var interval int
 	var createdAt time.Time
 	var updatedAt time.Time
 	var userId uuid.UUID
 
-	if err := res.Scan(&tId, &name, &desc, &start, &interval, &createdAt, &updatedAt, &userId); err != nil {
+	if err := res.Scan(&tId, &name, &desc, &start, &end, &interval, &createdAt, &updatedAt, &userId); err != nil {
 		return nil
 	}
-	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, End: end, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 	return &task
 }
 
@@ -56,19 +58,20 @@ func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) []RecurringTask {
 	tasks := []RecurringTask{}
 
 	for res.Next() {
-		var uid uuid.UUID
+		var tId uuid.UUID
 		var name string
 		var desc string
 		var start time.Time
+		var end time.Time
 		var interval int
 		var createdAt time.Time
 		var updatedAt time.Time
-		var parent uuid.UUID
+		var userId uuid.UUID
 
-		if err := res.Scan(&uid, &name, &desc, &start, &interval, &createdAt, &updatedAt, &parent); err != nil {
+		if err := res.Scan(&tId, &name, &desc, &start, &end, &interval, &createdAt, &updatedAt, &userId); err != nil {
 			return nil
 		}
-		task := RecurringTask{Id: uid, Name: name, Description: desc, Start: start, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: parent}
+		task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, End: end, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		tasks = append(tasks, task)
 	}
 	return tasks

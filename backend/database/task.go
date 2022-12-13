@@ -111,6 +111,19 @@ func (s *DBService) UpdateTask(task Task) error {
 		})
 }
 
+func (s *DBService) UpdateTaskDone(task Task) error {
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
+		func(tx *sql.Tx) error {
+			_, err := tx.Exec(
+				"UPDATE tasks SET done = $1, updated_at=now() WHERE id = $2 AND user_id=$3",
+				task.Done,
+				task.Id,
+				task.UserId,
+			)
+			return err
+		})
+}
+
 func (s *DBService) DeleteTask(id uuid.UUID, userId uuid.UUID) error {
 	res, err := s.db.Query(
 		"DELETE FROM tasks WHERE id = $1 AND user_id=$2",

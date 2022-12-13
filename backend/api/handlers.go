@@ -150,13 +150,40 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-	task.UserId = claims.Id
 
 	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	task.UserId = claims.Id
 	err = s.DB.UpdateTask(task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
+
+func (s *ApiService) UpdateTaskDone(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+
+	var task database.Task
+	json.Unmarshal(reqBody, &task)
+
+	task.Id = id
+
+	if task.UserId != claims.Id {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	task.UserId = claims.Id
+	err = s.DB.UpdateTaskDone(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -239,12 +266,12 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-	task.UserId = claims.Id
 
 	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	task.UserId = claims.Id
 	err = s.DB.UpdateRecurringTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

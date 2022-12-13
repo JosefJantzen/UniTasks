@@ -14,13 +14,6 @@ type User struct {
 	Pwd   string    `json:"pwd"`
 }
 
-func (user User) empty() bool {
-	if user.Id.String() == "" || user.EMail == "" || user.Pwd == "" {
-		return true
-	}
-	return false
-}
-
 func (s *DBService) GetUserById(id uuid.UUID) *User {
 	res, err := s.db.Query("SELECT * FROM users WHERE id=$1", id.String())
 	if err != nil {

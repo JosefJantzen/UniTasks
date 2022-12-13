@@ -14,7 +14,10 @@ type Task struct {
 	Name        string    `json:"name"`
 	Description string    `json:"desc"`
 	Due         time.Time `json:"due"`
-	ParentUser  uuid.UUID `json:"parent"`
+	Done        bool      `json:"done"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	UserId      uuid.UUID `json:"userId"`
 }
 
 func (s *DBService) GetTaskById(id uuid.UUID) *Task {
@@ -26,21 +29,24 @@ func (s *DBService) GetTaskById(id uuid.UUID) *Task {
 	defer res.Close()
 	res.Next()
 
-	var uid uuid.UUID
+	var tId uuid.UUID
 	var name string
 	var desc string
 	var due time.Time
-	var parent uuid.UUID
+	var done bool
+	var createdAt time.Time
+	var updatedAt time.Time
+	var userId uuid.UUID
 
-	if err := res.Scan(&uid, &name, &desc, &due, &parent); err != nil {
+	if err := res.Scan(&tId, &name, &desc, &done, &createdAt, &updatedAt, &due, &userId); err != nil {
 		return nil
 	}
-	task := Task{Id: uid, Name: name, Description: desc, Due: due, ParentUser: parent}
+	task := Task{Id: tId, Name: name, Description: desc, Due: due, UserId: userId}
 	return &task
 }
 
 func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
-	res, err := s.db.Query("SELECT * FROM tasks WHERE parentUser=$1", id)
+	res, err := s.db.Query("SELECT * FROM tasks WHERE user_id=$1", id)
 	if err != nil {
 		return nil
 	}
@@ -50,16 +56,19 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
 	tasks := []Task{}
 
 	for res.Next() {
-		var id uuid.UUID
+		var tId uuid.UUID
 		var name string
-		var due time.Time
 		var desc string
-		var parent uuid.UUID
+		var due time.Time
+		var done bool
+		var createdAt time.Time
+		var updatedAt time.Time
+		var userId uuid.UUID
 
-		if err := res.Scan(&id, &name, &desc, &due, &parent); err != nil {
+		if err := res.Scan(&tId, &name, &desc, &done, &createdAt, &updatedAt, &due, &userId); err != nil {
 			return nil
 		}
-		task := Task{Id: id, Name: name, Due: due, Description: desc, ParentUser: parent}
+		task := Task{Id: tId, Name: name, Description: desc, Due: due, UserId: userId}
 		tasks = append(tasks, task)
 	}
 	return tasks
@@ -70,11 +79,11 @@ func (s *DBService) InsertTask(task Task) uuid.UUID {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO tasks (name, due, description, parentUser) VALUES ($1, $2, $3, $4) RETURNING id",
+				"INSERT INTO tasks (name, due, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
 				task.Name,
 				task.Due,
 				task.Description,
-				task.ParentUser,
+				task.UserId,
 			).Scan(&id)
 
 			return err
@@ -90,11 +99,13 @@ func (s *DBService) UpdateTask(task Task) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE tasks SET name = $1, due = $2, description = $3 WHERE id = $4",
+				"UPDATE tasks SET name = $1, due = $2, description = $3, done = $4 updated_at=now() WHERE id = $5 AND user_id=$6",
 				task.Name,
 				task.Due,
 				task.Description,
+				task.Done,
 				task.Id,
+				task.UserId,
 			)
 			return err
 		})
@@ -102,7 +113,7 @@ func (s *DBService) UpdateTask(task Task) error {
 
 func (s *DBService) DeleteTask(id uuid.UUID, userId uuid.UUID) error {
 	res, err := s.db.Query(
-		"DELETE FROM tasks WHERE id = $1 AND parentUser=$2",
+		"DELETE FROM tasks WHERE id = $1 AND user_id=$2",
 		id,
 		userId,
 	)

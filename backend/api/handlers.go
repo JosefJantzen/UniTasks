@@ -103,7 +103,7 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if task.ParentUser != claims.Id {
+	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -127,7 +127,7 @@ func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *
 
 	var task database.Task
 	json.Unmarshal(reqBody, &task)
-	task.ParentUser = claims.Id
+	task.UserId = claims.Id
 	id := s.DB.InsertTask(task)
 	if id == uuid.Nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -150,9 +150,9 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-	task.ParentUser = claims.Id
+	task.UserId = claims.Id
 
-	if task.ParentUser != claims.Id {
+	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -176,7 +176,7 @@ func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if task.ParentUser != claims.Id {
+	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -216,7 +216,7 @@ func (s *ApiService) InsertRecurringTask(w http.ResponseWriter, r *http.Request,
 
 	var task database.RecurringTask
 	json.Unmarshal(reqBody, &task)
-	task.ParentUser = claims.Id
+	task.UserId = claims.Id
 	id := s.DB.InsertRecurringTask(task)
 	if id == uuid.Nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -239,9 +239,9 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-	task.ParentUser = claims.Id
+	task.UserId = claims.Id
 
-	if task.ParentUser != claims.Id {
+	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

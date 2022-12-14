@@ -142,7 +142,8 @@ func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *
 		fmt.Println("InsertTask error: ", err)
 		return
 	}
-	fmt.Fprint(w, id)
+	w.Header().Add("Content-Type", "application/json")
+	fmt.Fprint(w, "{\"id\": \""+id.String()+"\" }")
 }
 
 func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

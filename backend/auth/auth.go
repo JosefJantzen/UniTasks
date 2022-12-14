@@ -127,6 +127,10 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	if creds.EMail == "" || creds.Pwd == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if s.CheckMailUsed(creds.EMail) {
 		SignIn(w, r, s, creds)
 		return
@@ -135,10 +139,17 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 	pwd, err := hashPassword(creds.Pwd)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("SignUp error: ", err)
 		return
 	}
 
-	id := s.InsertUser(creds.EMail, pwd)
+	id, err := s.InsertUser(creds.EMail, pwd)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("SignUp error: ", err)
+		return
+	}
 
 	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
 

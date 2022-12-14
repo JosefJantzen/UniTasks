@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb"
@@ -17,10 +18,10 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (s *DBService) GetUserById(id uuid.UUID) *User {
+func (s *DBService) GetUserById(id uuid.UUID) (*User, error) {
 	res, err := s.db.Query("SELECT * FROM users WHERE id=$1", id.String())
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -33,10 +34,10 @@ func (s *DBService) GetUserById(id uuid.UUID) *User {
 	var updatedAt time.Time
 
 	if err := res.Scan(&uid, &mail, &pwd, &createdAt, &updatedAt); err != nil {
-		return nil
+		return nil, err
 	}
 	user := User{Id: uid, EMail: mail, Pwd: pwd, CreatedAt: createdAt, UpdatedAt: updatedAt}
-	return &user
+	return &user, nil
 }
 
 func (s *DBService) GetUserByMail(m string) (*User, error) {
@@ -77,9 +78,9 @@ func (s *DBService) CheckMailUsed(m string) bool {
 	return true
 }
 
-func (s *DBService) InsertUser(email string, pwd string) uuid.UUID {
+func (s *DBService) InsertUser(email string, pwd string) (uuid.UUID, error) {
 	if email == "" || pwd == "" {
-		return uuid.Nil
+		return uuid.Nil, errors.New("InsertUser: e-Mail or password is empty")
 	}
 	var id uuid.UUID
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
@@ -95,12 +96,7 @@ func (s *DBService) InsertUser(email string, pwd string) uuid.UUID {
 			}
 			return nil
 		})
-
-	if err != nil {
-		return uuid.Nil
-	}
-
-	return id
+	return id, err
 }
 
 func (s *DBService) UpdateMail(id uuid.UUID, mail string) error {

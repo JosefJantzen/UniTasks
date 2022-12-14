@@ -49,7 +49,7 @@ func InitDB() *DBService {
 		log.Fatalf("unable to read file: %v", err)
 	}
 	if _, err := db.Exec(string(body)); err != nil {
-		fmt.Println("Err345 ", err)
+		fmt.Println("Error: ", err)
 		return nil
 	}
 

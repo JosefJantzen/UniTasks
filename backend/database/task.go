@@ -38,17 +38,17 @@ func (s *DBService) GetTaskById(id uuid.UUID) *Task {
 	var updatedAt time.Time
 	var userId uuid.UUID
 
-	if err := res.Scan(&tId, &name, &desc, &done, &createdAt, &updatedAt, &due, &userId); err != nil {
+	if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
 		return nil
 	}
-	task := Task{Id: tId, Name: name, Description: desc, Due: due, UserId: userId}
+	task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 	return &task
 }
 
-func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
+func (s *DBService) GetTasksByUser(id uuid.UUID) ([]Task, error) {
 	res, err := s.db.Query("SELECT * FROM tasks WHERE user_id=$1", id)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -65,13 +65,13 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) []Task {
 		var updatedAt time.Time
 		var userId uuid.UUID
 
-		if err := res.Scan(&tId, &name, &desc, &done, &createdAt, &updatedAt, &due, &userId); err != nil {
-			return nil
+		if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
+			return nil, err
 		}
-		task := Task{Id: tId, Name: name, Description: desc, Due: due, UserId: userId}
+		task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		tasks = append(tasks, task)
 	}
-	return tasks
+	return tasks, nil
 }
 
 func (s *DBService) InsertTask(task Task) uuid.UUID {

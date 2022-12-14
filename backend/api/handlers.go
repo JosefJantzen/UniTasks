@@ -112,10 +112,14 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 }
 
 func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
-	tasks := s.DB.GetTasksByUser(claims.Id)
-	if tasks == nil {
+	tasks, err := s.DB.GetTasksByUser(claims.Id)
+	if err != nil {
+		fmt.Println("sfd ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	if tasks == nil {
+		tasks = []database.Task{}
 	}
 
 	w.Header().Add("Content-Type", "text/json; charset=utf-8")
@@ -296,10 +300,13 @@ func (s *ApiService) DeleteRecurringTask(w http.ResponseWriter, r *http.Request,
 }
 
 func (s *ApiService) GetAllTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
-	tasks := s.DB.GetTasksByUser(claims.Id)
-	if tasks == nil {
+	tasks, err := s.DB.GetTasksByUser(claims.Id)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	if tasks == nil {
+		tasks = []database.Task{}
 	}
 
 	recurringTasks := s.DB.GetRecurringTasksByUser(claims.Id)

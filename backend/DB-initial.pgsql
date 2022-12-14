@@ -35,7 +35,7 @@ INSERT INTO users (id, e_mail, pwd)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10333', 
     'admin@admin.com', 
-    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK' /* secret */
+    '$2a$14$do7vbh0rgDNJCi1Uvz60zOE6dannxKht9yRG6bAXM4NFIrSHEKEZ.' /* secret */
 ) ON CONFLICT DO NOTHING;
 
 INSERT INTO recurring_tasks (id, name, description, start, ending, interval, user_id)

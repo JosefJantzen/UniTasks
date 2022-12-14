@@ -22,13 +22,6 @@ type Credentials struct {
 	Pwd   string `json:"pwd"`
 }
 
-func (c Credentials) empty() bool {
-	if c.EMail == "" || c.Pwd == "" {
-		return true
-	}
-	return false
-}
-
 type Claims struct {
 	Id uuid.UUID `json:"id"`
 	jwt.RegisteredClaims
@@ -94,9 +87,8 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds Credentials) {
-
-	user := s.GetUserByMail(creds.EMail)
-	if user == nil {
+	user, err := s.GetUserByMail(creds.EMail)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -240,8 +232,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService) {
-	user := s.GetUserByMail(creds.EMail)
-	if user == nil {
+	user, err := s.GetUserByMail(creds.EMail)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -251,7 +243,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *da
 		return
 	}
 
-	err := s.DeleteUser(user.Id)
+	err = s.DeleteUser(user.Id)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

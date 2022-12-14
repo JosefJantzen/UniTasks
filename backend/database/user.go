@@ -3,15 +3,18 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb"
 	"github.com/google/uuid"
 )
 
 type User struct {
-	Id    uuid.UUID `json:"id"`
-	EMail string    `json:"eMail"`
-	Pwd   string    `json:"pwd"`
+	Id        uuid.UUID `json:"id"`
+	EMail     string    `json:"eMail"`
+	Pwd       string    `json:"pwd"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 func (s *DBService) GetUserById(id uuid.UUID) *User {
@@ -26,18 +29,20 @@ func (s *DBService) GetUserById(id uuid.UUID) *User {
 	var uid uuid.UUID
 	var mail string
 	var pwd string
+	var createdAt time.Time
+	var updatedAt time.Time
 
-	if err := res.Scan(&uid, &mail, &pwd); err != nil {
+	if err := res.Scan(&uid, &mail, &pwd, &createdAt, &updatedAt); err != nil {
 		return nil
 	}
-	user := User{Id: uid, EMail: mail, Pwd: pwd}
+	user := User{Id: uid, EMail: mail, Pwd: pwd, CreatedAt: createdAt, UpdatedAt: updatedAt}
 	return &user
 }
 
-func (s *DBService) GetUserByMail(m string) *User {
+func (s *DBService) GetUserByMail(m string) (*User, error) {
 	res, err := s.db.Query("SELECT * FROM users WHERE e_mail=$1", m)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -46,12 +51,14 @@ func (s *DBService) GetUserByMail(m string) *User {
 	var uid uuid.UUID
 	var mail string
 	var pwd string
+	var createdAt time.Time
+	var updatedAt time.Time
 
-	if err := res.Scan(&uid, &mail, &pwd); err != nil {
-		return nil
+	if err := res.Scan(&uid, &mail, &pwd, &createdAt, &updatedAt); err != nil {
+		return nil, err
 	}
-	user := User{Id: uid, EMail: mail, Pwd: pwd}
-	return &user
+	user := User{Id: uid, EMail: mail, Pwd: pwd, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	return &user, nil
 }
 
 func (s *DBService) CheckMailUsed(m string) bool {

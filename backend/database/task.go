@@ -20,10 +20,10 @@ type Task struct {
 	UserId      uuid.UUID `json:"userId"`
 }
 
-func (s *DBService) GetTaskById(id uuid.UUID) *Task {
+func (s *DBService) GetTaskById(id uuid.UUID) (*Task, error) {
 	res, err := s.db.Query("SELECT * FROM tasks WHERE id=$1", id)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -39,10 +39,10 @@ func (s *DBService) GetTaskById(id uuid.UUID) *Task {
 	var userId uuid.UUID
 
 	if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
-		return nil
+		return nil, err
 	}
 	task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
-	return &task
+	return &task, nil
 }
 
 func (s *DBService) GetTasksByUser(id uuid.UUID) ([]Task, error) {

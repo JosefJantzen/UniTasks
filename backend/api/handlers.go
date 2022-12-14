@@ -98,10 +98,14 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	task := s.DB.GetTaskById(id)
-	if task == nil {
+	task, err := s.DB.GetTaskById(id)
+	if err != nil {
+		fmt.Println("GetTaskById error: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	if task == nil {
+		*task = database.Task{}
 	}
 	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -114,7 +118,7 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	tasks, err := s.DB.GetTasksByUser(claims.Id)
 	if err != nil {
-		fmt.Println("sfd ", err)
+		fmt.Println("GetTasksByUser error: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

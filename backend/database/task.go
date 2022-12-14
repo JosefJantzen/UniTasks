@@ -74,7 +74,7 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) ([]Task, error) {
 	return tasks, nil
 }
 
-func (s *DBService) InsertTask(task Task) uuid.UUID {
+func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 	var id uuid.UUID
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
@@ -88,11 +88,7 @@ func (s *DBService) InsertTask(task Task) uuid.UUID {
 
 			return err
 		})
-
-	if err != nil {
-		return uuid.Nil
-	}
-	return id
+	return id, err
 }
 
 func (s *DBService) UpdateTask(task Task) error {
@@ -135,5 +131,5 @@ func (s *DBService) DeleteTask(id uuid.UUID, userId uuid.UUID) error {
 	}
 
 	defer res.Close()
-	return err
+	return nil
 }

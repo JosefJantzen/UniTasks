@@ -100,8 +100,8 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 
 	task, err := s.DB.GetTaskById(id)
 	if err != nil {
-		fmt.Println("GetTaskById error: ", err)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("GetTaskById error: ", err)
 		return
 	}
 	if task == nil {
@@ -118,8 +118,8 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
 	tasks, err := s.DB.GetTasksByUser(claims.Id)
 	if err != nil {
-		fmt.Println("GetTasksByUser error: ", err)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("GetTasksByUser error: ", err)
 		return
 	}
 	if tasks == nil {
@@ -136,9 +136,10 @@ func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *
 	var task database.Task
 	json.Unmarshal(reqBody, &task)
 	task.UserId = claims.Id
-	id := s.DB.InsertTask(task)
-	if id == uuid.Nil {
+	id, err := s.DB.InsertTask(task)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("InsertTask error: ", err)
 		return
 	}
 	fmt.Fprint(w, id)
@@ -149,6 +150,7 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTask error: ", err)
 		return
 	}
 
@@ -167,6 +169,7 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	err = s.DB.UpdateTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTask error: ", err)
 		return
 	}
 }
@@ -176,6 +179,7 @@ func (s *ApiService) UpdateTaskDone(w http.ResponseWriter, r *http.Request, clai
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTaskDone error: ", err)
 		return
 	}
 
@@ -194,8 +198,27 @@ func (s *ApiService) UpdateTaskDone(w http.ResponseWriter, r *http.Request, clai
 	err = s.DB.UpdateTaskDone(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTaskDone error: ", err)
 		return
 	}
+}
+
+func (s *ApiService) DeleteTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("DeleteTask error: ", err)
+		return
+	}
+
+	err = s.DB.DeleteTask(id, claims.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("DeleteTask error: ", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
@@ -217,22 +240,6 @@ func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request
 	}
 	w.Header().Add("Content-Type", "text/json; charset=utf-8")
 	json.NewEncoder(w).Encode(task)
-}
-
-func (s *ApiService) DeleteTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
-	vars := mux.Vars(r)
-	id, err := uuid.Parse(vars["id"])
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = s.DB.DeleteTask(id, claims.Id)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

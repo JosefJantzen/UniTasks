@@ -160,7 +160,12 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
 	var task database.Task
-	json.Unmarshal(reqBody, &task)
+	err = json.Unmarshal(reqBody, &task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTaskDone error: ", err)
+		return
+	}
 
 	task.Id = id
 	task.UserId = claims.Id
@@ -185,7 +190,12 @@ func (s *ApiService) UpdateTaskDone(w http.ResponseWriter, r *http.Request, clai
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
 	var task database.Task
-	json.Unmarshal(reqBody, &task)
+	err = json.Unmarshal(reqBody, &task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateTaskDone error: ", err)
+		return
+	}
 
 	task.Id = id
 	task.UserId = claims.Id

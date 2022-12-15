@@ -20,6 +20,18 @@ type Task struct {
 	UserId      uuid.UUID `json:"userId"`
 }
 
+func (t *Task) merge(s *Task) {
+	if s.Name != "" {
+		t.Name = s.Name
+	}
+	if s.Description != "" {
+		t.Description = s.Description
+	}
+	if s.Due != (time.Time{}) {
+		t.Due = s.Due
+	}
+}
+
 func (s *DBService) GetTaskById(id uuid.UUID) (*Task, error) {
 	res, err := s.db.Query("SELECT * FROM tasks WHERE id=$1", id)
 	if err != nil {
@@ -41,7 +53,7 @@ func (s *DBService) GetTaskById(id uuid.UUID) (*Task, error) {
 	if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
 		return nil, err
 	}
-	task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+	task := Task{Id: tId, Name: name, Description: desc, Done: done, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 	return &task, nil
 }
 
@@ -79,7 +91,7 @@ func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO tasks (name, due, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+				"INSERT INTO tasks (name, due, description, user_id, created_at) VALUES ($1, $2, $3, $4, now()) RETURNING id",
 				task.Name,
 				task.Due,
 				task.Description,
@@ -91,15 +103,20 @@ func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 	return id, err
 }
 
-func (s *DBService) UpdateTask(task Task) error {
+func (s *DBService) UpdateTask(reqTask Task) error {
+	task, err := s.GetTaskById(reqTask.Id)
+	if err != nil {
+		return err
+	}
+	task.merge(&reqTask)
+
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE tasks SET name = $1, due = $2, description = $3, done = $4, updated_at=now() WHERE id = $5 AND user_id=$6",
+				"UPDATE tasks SET name = $1, due = $2, description = $3, updated_at=now() WHERE id = $4 AND user_id=$5",
 				task.Name,
 				task.Due,
 				task.Description,
-				task.Done,
 				task.Id,
 				task.UserId,
 			)

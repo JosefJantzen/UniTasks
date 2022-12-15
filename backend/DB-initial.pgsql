@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS recurring_tasks (
     interval INT NOT NULL, 
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now(),
-    user_id UUID REFERENCES users(id)
+    user_id UUID REFERENCES users(id) NOT NULL
 );
 
 /*CREATE TABLE IF NOT EXISTS recurring_tasks_history ()*/
@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT, 
     due TIMESTAMP NOT NULL,
     done BOOL DEFAULT false,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now(),
-    user_id UUID REFERENCES users(id)
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    user_id UUID REFERENCES users(id) NOT NULL
 );
 
 INSERT INTO users (id, e_mail, pwd) 

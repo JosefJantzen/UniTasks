@@ -2,19 +2,19 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
     e_mail STRING NOT NULL,
     pwd BYTEA NOT NULL,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS recurring_tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
     name STRING NOT NULL, 
     description TEXT,
-    start TIMESTAMP DEFAULT now(),
+    start TIMESTAMP NOT NULL DEFAULT now(),
     ending TIMESTAMP,
     interval INT NOT NULL, 
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now(),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
     user_id UUID REFERENCES users(id) NOT NULL
 );
 
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT, 
     due TIMESTAMP NOT NULL,
     done BOOL DEFAULT false,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     user_id UUID REFERENCES users(id) NOT NULL
 );
@@ -49,12 +49,11 @@ VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
 ) ON CONFLICT DO NOTHING;
 
-INSERT INTO tasks (id, name, description, due, user_id, created_at)
+INSERT INTO tasks (id, name, description, due, user_id)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10555', 
     'Test-task', 
     'This is a normal task description', 
     '2023-01-01 15:15:35', 
-    'acde070d-8c4c-4f0d-9d8a-162843c10333',
-    now()
+    'acde070d-8c4c-4f0d-9d8a-162843c10333'
 ) ON CONFLICT DO NOTHING;

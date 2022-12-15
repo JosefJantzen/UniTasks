@@ -95,7 +95,7 @@ func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO tasks (name, due, description, user_id, created_at) VALUES ($1, $2, $3, $4, now()) RETURNING id",
+				"INSERT INTO tasks (name, due, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
 				task.Name,
 				task.Due,
 				task.Description,

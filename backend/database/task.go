@@ -32,8 +32,12 @@ func (t *Task) merge(s *Task) {
 	}
 }
 
-func (s *DBService) GetTaskById(id uuid.UUID) (*Task, error) {
-	res, err := s.db.Query("SELECT * FROM tasks WHERE id=$1", id)
+func (s *DBService) GetTaskById(id uuid.UUID, uid uuid.UUID) (*Task, error) {
+	res, err := s.db.Query(
+		"SELECT * FROM tasks WHERE id=$1 AND user_id=$2",
+		id,
+		uid,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +108,7 @@ func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 }
 
 func (s *DBService) UpdateTask(reqTask Task) error {
-	task, err := s.GetTaskById(reqTask.Id)
+	task, err := s.GetTaskById(reqTask.Id, reqTask.UserId)
 	if err != nil {
 		return err
 	}

@@ -98,7 +98,7 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	task, err := s.DB.GetTaskById(id)
+	task, err := s.DB.GetTaskById(id, claims.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("GetTaskById error: ", err)
@@ -234,7 +234,7 @@ func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	task, err := s.DB.GetRecurringTaskById(id)
+	task, err := s.DB.GetRecurringTaskById(id, claims.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("GetRecurringTaskById error: ", err)
@@ -271,7 +271,9 @@ func (s *ApiService) InsertRecurringTask(w http.ResponseWriter, r *http.Request,
 
 	var task database.RecurringTask
 	json.Unmarshal(reqBody, &task)
+
 	task.UserId = claims.Id
+
 	id, err := s.DB.InsertRecurringTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -296,12 +298,8 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-
-	if task.UserId != claims.Id {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	task.UserId = claims.Id
+
 	err = s.DB.UpdateRecurringTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

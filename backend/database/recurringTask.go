@@ -21,8 +21,30 @@ type RecurringTask struct {
 	UserId      uuid.UUID `json:"userId"`
 }
 
-func (s *DBService) GetRecurringTaskById(id uuid.UUID) (*RecurringTask, error) {
-	res, err := s.db.Query("SELECT * FROM recurring_tasks WHERE id=$1", id)
+func (t *RecurringTask) merge(s *RecurringTask) {
+	if s.Name != "" {
+		t.Name = s.Name
+	}
+	if s.Description != "" {
+		t.Description = s.Description
+	}
+	if s.Start != (time.Time{}) {
+		t.Start = s.Start
+	}
+	if s.Ending != (time.Time{}) {
+		t.Start = s.Start
+	}
+	if s.Interval != 0 {
+		t.Interval = s.Interval
+	}
+}
+
+func (s *DBService) GetRecurringTaskById(id uuid.UUID, uid uuid.UUID) (*RecurringTask, error) {
+	res, err := s.db.Query(
+		"SELECT * FROM recurring_tasks WHERE id=$1 AND user_id=$2",
+		id,
+		uid,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +119,12 @@ func (s *DBService) InsertRecurringTask(task RecurringTask) (uuid.UUID, error) {
 	return id, err
 }
 
-func (s *DBService) UpdateRecurringTask(task RecurringTask) error {
+func (s *DBService) UpdateRecurringTask(reqTask RecurringTask) error {
+	task, err := s.GetRecurringTaskById(reqTask.Id, reqTask.UserId)
+	if err != nil {
+		return err
+	}
+	task.merge(&reqTask)
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(

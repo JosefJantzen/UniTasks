@@ -49,11 +49,12 @@ VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
 ) ON CONFLICT DO NOTHING;
 
-INSERT INTO tasks (id, name, description, due, user_id)
+INSERT INTO tasks (id, name, description, due, user_id, created_at)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10555', 
     'Test-task', 
     'This is a normal task description', 
     '2023-01-01 15:15:35', 
-    'acde070d-8c4c-4f0d-9d8a-162843c10333'
+    'acde070d-8c4c-4f0d-9d8a-162843c10333',
+    now()
 ) ON CONFLICT DO NOTHING;

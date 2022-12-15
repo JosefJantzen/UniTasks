@@ -21,10 +21,10 @@ type RecurringTask struct {
 	UserId      uuid.UUID `json:"userId"`
 }
 
-func (s *DBService) GetRecurringTaskById(id uuid.UUID) *RecurringTask {
+func (s *DBService) GetRecurringTaskById(id uuid.UUID) (*RecurringTask, error) {
 	res, err := s.db.Query("SELECT * FROM recurring_tasks WHERE id=$1", id)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -41,16 +41,16 @@ func (s *DBService) GetRecurringTaskById(id uuid.UUID) *RecurringTask {
 	var userId uuid.UUID
 
 	if err := res.Scan(&tId, &name, &desc, &start, &ending, &interval, &createdAt, &updatedAt, &userId); err != nil {
-		return nil
+		return nil, err
 	}
 	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
-	return &task
+	return &task, nil
 }
 
-func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) []RecurringTask {
+func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) ([]RecurringTask, error) {
 	res, err := s.db.Query("SELECT * FROM recurring_tasks WHERE user_id=$1", id)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	defer res.Close()
@@ -69,16 +69,15 @@ func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) []RecurringTask {
 		var userId uuid.UUID
 
 		if err := res.Scan(&tId, &name, &desc, &start, &ending, &interval, &createdAt, &updatedAt, &userId); err != nil {
-			return nil
+			return nil, err
 		}
 		task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		tasks = append(tasks, task)
 	}
-	return tasks
+	return tasks, nil
 }
 
-func (s *DBService) InsertRecurringTask(task RecurringTask) uuid.UUID {
-
+func (s *DBService) InsertRecurringTask(task RecurringTask) (uuid.UUID, error) {
 	var id uuid.UUID
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
@@ -95,15 +94,11 @@ func (s *DBService) InsertRecurringTask(task RecurringTask) uuid.UUID {
 			}
 			return nil
 		})
-
-	if err != nil {
-		return uuid.Nil
-	}
-	return id
+	return id, err
 }
 
 func (s *DBService) UpdateRecurringTask(task RecurringTask) error {
-	err := crdb.ExecuteTx(context.Background(), s.db, nil,
+	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
 				"UPDATE recurring_tasks SET name = $1, interval = $2, description = $3, updated_at=now() WHERE id = $4 AND user_id=$5",
@@ -115,10 +110,6 @@ func (s *DBService) UpdateRecurringTask(task RecurringTask) error {
 			)
 			return err
 		})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (s *DBService) DeleteRecurringTask(id uuid.UUID, userId uuid.UUID) error {
@@ -130,7 +121,6 @@ func (s *DBService) DeleteRecurringTask(id uuid.UUID, userId uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-
 	defer res.Close()
-	return err
+	return nil
 }

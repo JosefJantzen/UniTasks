@@ -95,7 +95,7 @@ func (s *DBService) UpdateTask(task Task) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE tasks SET name = $1, due = $2, description = $3, done = $4 updated_at=now() WHERE id = $5 AND user_id=$6",
+				"UPDATE tasks SET name = $1, due = $2, description = $3, done = $4, updated_at=now() WHERE id = $5 AND user_id=$6",
 				task.Name,
 				task.Due,
 				task.Description,

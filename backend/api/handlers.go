@@ -16,13 +16,13 @@ type ApiService struct {
 	DB *database.DBService
 }
 
+func NewApiService(s *database.DBService) *ApiService {
+	return &ApiService{DB: s}
+}
+
 type EMail struct {
 	Id   uuid.UUID `json:"id"`
 	Mail string    `json:"eMail"`
-}
-
-func NewApiService(s *database.DBService) *ApiService {
-	return &ApiService{DB: s}
 }
 
 type AllTasks struct {
@@ -111,7 +111,7 @@ func (s *ApiService) GetTaskById(w http.ResponseWriter, r *http.Request, claims 
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(task)
 }
 
@@ -126,7 +126,7 @@ func (s *ApiService) GetTasksByUser(w http.ResponseWriter, r *http.Request, clai
 		tasks = []database.Task{}
 	}
 
-	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(tasks)
 }
 
@@ -135,7 +135,9 @@ func (s *ApiService) InsertTask(w http.ResponseWriter, r *http.Request, claims *
 
 	var task database.Task
 	json.Unmarshal(reqBody, &task)
+
 	task.UserId = claims.Id
+
 	id, err := s.DB.InsertTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -161,12 +163,8 @@ func (s *ApiService) UpdateTask(w http.ResponseWriter, r *http.Request, claims *
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-
-	if task.UserId != claims.Id {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	task.UserId = claims.Id
+
 	err = s.DB.UpdateTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -190,12 +188,8 @@ func (s *ApiService) UpdateTaskDone(w http.ResponseWriter, r *http.Request, clai
 	json.Unmarshal(reqBody, &task)
 
 	task.Id = id
-
-	if task.UserId != claims.Id {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	task.UserId = claims.Id
+
 	err = s.DB.UpdateTaskDone(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -230,27 +224,35 @@ func (s *ApiService) GetRecurringTaskById(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	task := s.DB.GetRecurringTaskById(id)
-	if task == nil {
+	task, err := s.DB.GetRecurringTaskById(id)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("GetRecurringTaskById error: ", err)
 		return
+	}
+	if task == nil {
+		*task = database.RecurringTask{}
 	}
 	if task.UserId != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(task)
 }
 
 func (s *ApiService) GetRecurringTasksByUser(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {
-	tasks := s.DB.GetRecurringTasksByUser(claims.Id)
-	if tasks == nil {
+	tasks, err := s.DB.GetRecurringTasksByUser(claims.Id)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("GetRecurringTasksByUser error: ", err)
 		return
 	}
+	if tasks == nil {
+		tasks = []database.RecurringTask{}
+	}
 
-	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(tasks)
 }
 
@@ -260,9 +262,10 @@ func (s *ApiService) InsertRecurringTask(w http.ResponseWriter, r *http.Request,
 	var task database.RecurringTask
 	json.Unmarshal(reqBody, &task)
 	task.UserId = claims.Id
-	id := s.DB.InsertRecurringTask(task)
-	if id == uuid.Nil {
+	id, err := s.DB.InsertRecurringTask(task)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("InsertRecurringTask error: ", err)
 		return
 	}
 	fmt.Fprint(w, id)
@@ -273,6 +276,7 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateRecurringTask error: ", err)
 		return
 	}
 
@@ -291,6 +295,7 @@ func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request,
 	err = s.DB.UpdateRecurringTask(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("UpdateRecurringTask error: ", err)
 		return
 	}
 }
@@ -300,12 +305,14 @@ func (s *ApiService) DeleteRecurringTask(w http.ResponseWriter, r *http.Request,
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("DeleteRecurringTask error: ", err)
 		return
 	}
 
 	err = s.DB.DeleteRecurringTask(id, claims.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("DeleteRecurringTask error: ", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -321,14 +328,17 @@ func (s *ApiService) GetAllTasksByUser(w http.ResponseWriter, r *http.Request, c
 		tasks = []database.Task{}
 	}
 
-	recurringTasks := s.DB.GetRecurringTasksByUser(claims.Id)
-	if recurringTasks == nil {
+	recurringTasks, err := s.DB.GetRecurringTasksByUser(claims.Id)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	if recurringTasks == nil {
+		recurringTasks = []database.RecurringTask{}
 	}
 
 	allTasks := AllTasks{Tasks: tasks, RecurringTasks: recurringTasks}
 
-	w.Header().Add("Content-Type", "text/json; charset=utf-8")
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(allTasks)
 }

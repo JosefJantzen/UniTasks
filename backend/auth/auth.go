@@ -22,13 +22,6 @@ type Credentials struct {
 	Pwd   string `json:"pwd"`
 }
 
-func (c Credentials) empty() bool {
-	if c.EMail == "" || c.Pwd == "" {
-		return true
-	}
-	return false
-}
-
 type Claims struct {
 	Id uuid.UUID `json:"id"`
 	jwt.RegisteredClaims
@@ -94,9 +87,8 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds Credentials) {
-
-	user := s.GetUserByMail(creds.EMail)
-	if user == nil {
+	user, err := s.GetUserByMail(creds.EMail)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -135,6 +127,10 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	if creds.EMail == "" || creds.Pwd == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if s.CheckMailUsed(creds.EMail) {
 		SignIn(w, r, s, creds)
 		return
@@ -143,10 +139,17 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 	pwd, err := hashPassword(creds.Pwd)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("SignUp error: ", err)
 		return
 	}
 
-	id := s.InsertUser(creds.EMail, pwd)
+	id, err := s.InsertUser(creds.EMail, pwd)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("SignUp error: ", err)
+		return
+	}
 
 	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
 
@@ -240,8 +243,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService) {
-	user := s.GetUserByMail(creds.EMail)
-	if user == nil {
+	user, err := s.GetUserByMail(creds.EMail)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -251,7 +254,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *da
 		return
 	}
 
-	err := s.DeleteUser(user.Id)
+	err = s.DeleteUser(user.Id)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

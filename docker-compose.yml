@@ -34,7 +34,9 @@ services:
     volumes:
       - uni-tasks-1:/cockroach/cockroach-data
     command: start-single-node --insecure
-
+    deploy:
+        restart_policy:
+          condition: on-failure
 volumes:
   uni-tasks-1:
 

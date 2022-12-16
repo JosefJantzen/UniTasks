@@ -20,28 +20,28 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 
 	myRouter.Handle("/", auth.Auth(apiService.Welcome)).Methods("GET")
 
-	myRouter.HandleFunc("/v1/api/signin", apiService.SignIn).Methods("POST")
-	myRouter.HandleFunc("/v1/api/signup", apiService.SignUp).Methods("POST")
-	myRouter.HandleFunc("/v1/api/logout", auth.Logout).Methods("GET")
-	myRouter.HandleFunc("/v1/api/refresh", auth.Refresh).Methods("GET")
-	myRouter.Handle("/v1/api/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
-	myRouter.Handle("/v1/api/updateMail", auth.Auth(apiService.UpdateMail)).Methods("POST")
-	myRouter.Handle("/v1/api/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("POST")
+	myRouter.HandleFunc("/api/v1/signin", apiService.SignIn).Methods("POST")
+	myRouter.HandleFunc("/api/v1/signup", apiService.SignUp).Methods("POST")
+	myRouter.HandleFunc("/api/v1/logout", auth.Logout).Methods("GET")
+	myRouter.HandleFunc("/api/v1/refresh", auth.Refresh).Methods("GET")
+	myRouter.Handle("/api/v1/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
+	myRouter.Handle("/api/v1/updateMail", auth.Auth(apiService.UpdateMail)).Methods("POST")
+	myRouter.Handle("/api/v1/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("POST")
 
-	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
-	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
-	myRouter.Handle("/v1/api/tasks", auth.Auth(apiService.InsertTask)).Methods("POST")
-	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.UpdateTask)).Methods("PUT")
-	myRouter.Handle("/v1/api/tasks/done/{id}", auth.Auth(apiService.UpdateTaskDone)).Methods("PUT")
-	myRouter.Handle("/v1/api/tasks/{id}", auth.Auth(apiService.DeleteTask)).Methods("DELETE")
+	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
+	myRouter.Handle("/api/v1/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
+	myRouter.Handle("/api/v1/tasks", auth.Auth(apiService.InsertTask)).Methods("POST")
+	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.UpdateTask)).Methods("PUT")
+	myRouter.Handle("/api/v1/tasks/done/{id}", auth.Auth(apiService.UpdateTaskDone)).Methods("PUT")
+	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.DeleteTask)).Methods("DELETE")
 
-	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.GetRecurringTaskById)).Methods("GET")
-	myRouter.Handle("/v1/api/recurring-tasks", auth.Auth(apiService.GetRecurringTasksByUser)).Methods("GET")
-	myRouter.Handle("/v1/api/recurring-tasks", auth.Auth(apiService.InsertRecurringTask)).Methods("POST")
-	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.UpdateRecurringTask)).Methods("PUT")
-	myRouter.Handle("/v1/api/recurring-tasks/{id}", auth.Auth(apiService.DeleteRecurringTask)).Methods("DELETE")
+	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.GetRecurringTaskById)).Methods("GET")
+	myRouter.Handle("/api/v1/recurring-tasks", auth.Auth(apiService.GetRecurringTasksByUser)).Methods("GET")
+	myRouter.Handle("/api/v1/recurring-tasks", auth.Auth(apiService.InsertRecurringTask)).Methods("POST")
+	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.UpdateRecurringTask)).Methods("PUT")
+	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.DeleteRecurringTask)).Methods("DELETE")
 
-	myRouter.Handle("/v1/api/all", auth.Auth(apiService.GetAllTasksByUser)).Methods("GET")
+	myRouter.Handle("/api/v1/all", auth.Auth(apiService.GetAllTasksByUser)).Methods("GET")
 
 	//  Start HTTP
 	go func() {

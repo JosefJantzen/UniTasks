@@ -13,12 +13,6 @@ services:
     ports:
       - 8080:8080
       - 443:443
-    environment:
-      - PGUSER=${PGUSER:-totoro}
-      - PGPASSWORD=${PGPASSWORD:?database password not set}
-      - PGHOST=${PGHOST:-db}
-      - PGPORT=${PGPORT:-26257}
-      - PGDATABASE=${PGDATABASE:-unitasks}
     deploy:
         restart_policy:
           condition: on-failure

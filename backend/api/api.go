@@ -7,10 +7,11 @@ import (
 
 	"github.com/gorilla/mux"
 	"unitasks.josefjantzen.de/backend/auth"
+	"unitasks.josefjantzen.de/backend/config"
 	"unitasks.josefjantzen.de/backend/database"
 )
 
-func InitServer(dbService *database.DBService) {
+func InitServer(dbService *database.DBService, config *config.Config) {
 	fmt.Print("Starting Server: ")
 
 	apiService := NewApiService(dbService)
@@ -44,7 +45,7 @@ func InitServer(dbService *database.DBService) {
 
 	//  Start HTTP
 	go func() {
-		err_http := http.ListenAndServe(":8080", myRouter)
+		err_http := http.ListenAndServe(":"+config.Port, myRouter)
 		fmt.Println(err_http)
 		if err_http != nil {
 			log.Fatal("Web server (HTTP): ", err_http)

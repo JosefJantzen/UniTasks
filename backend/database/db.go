@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/cenkalti/backoff"
+	"unitasks.josefjantzen.de/backend/config"
 )
 
 type DBService struct {
@@ -17,22 +18,14 @@ func NewDBService(d *sql.DB) *DBService {
 	return &DBService{db: d}
 }
 
-func InitDB() *DBService {
+func InitDB(config *config.Config) *DBService {
 	fmt.Print("Start DB init: ")
-	pgConnString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		os.Getenv("PGHOST"),
-		os.Getenv("PGPORT"),
-		os.Getenv("PGDATABASE"),
-		os.Getenv("PGUSER"),
-		os.Getenv("PGPASSWORD"),
-	)
-
 	var (
 		db  *sql.DB
 		err error
 	)
 	openDB := func() error {
-		db, err = sql.Open("postgres", pgConnString)
+		db, err = sql.Open("postgres", config.DB.GetDBConnectString())
 		if err != nil {
 			fmt.Println(err)
 		}

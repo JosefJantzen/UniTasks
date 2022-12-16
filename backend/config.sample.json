@@ -1,0 +1,11 @@
+{
+    "DB": {
+        "user": "totoro",
+        "pwd": "whatever",
+        "host": "db",
+        "port": "26257",
+        "database": "unitasks",
+        "initial": "DB-initial.pgsql"
+    },
+    "port": "8080"
+}

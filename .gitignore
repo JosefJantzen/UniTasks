@@ -19,4 +19,5 @@ server.crt
 server.key
 
 .env
+config.json
 temp.sql

@@ -34,3 +34,4 @@ EXPOSE 443
 USER nonroot:nonroot
 
 ENTRYPOINT ["/uni-tasks"]
+CMD [ "config.json" ]

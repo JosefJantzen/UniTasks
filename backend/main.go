@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
 	_ "github.com/cockroachdb/cockroach-go/v2/crdb"
 
@@ -11,7 +13,16 @@ import (
 )
 
 func main() {
-	config, err := config.Read("config.sample.json")
+	var configName string
+	if len(os.Args) > 0 {
+		configName = os.Args[1]
+	}
+	if _, err := os.Stat(configName); errors.Is(err, os.ErrNotExist) {
+		fmt.Println("Fallback to sample config because ", configName, " doesn't exists")
+		configName = "config.sample.json"
+	}
+
+	config, err := config.Read(configName)
 	if err != nil {
 		fmt.Println("Config read error: ", err)
 		return

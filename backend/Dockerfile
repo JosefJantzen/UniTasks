@@ -24,6 +24,7 @@ WORKDIR /
 COPY backend/server.crt ./
 COPY backend/server.key ./
 COPY backend/DB-initial.pgsql ./
+COPY backend/*.json ./
 
 COPY --from=build /uni-tasks /uni-tasks
 

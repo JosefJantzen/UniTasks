@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS recurring_tasks_history (
     done_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    recurring_task_id REFERENCES recurring_tasks(id) NOT NULL
+    recurring_task_id UUID REFERENCES recurring_tasks(id) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
@@ -55,6 +55,22 @@ VALUES (
     '2023-01-01 15:15:35', 
     7, 
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
+) ON CONFLICT DO NOTHING;
+
+INSERT INTO recurring_tasks_history (id, description, done, done_at, recurring_task_id)
+VALUES (
+    'acde070d-8c4c-4f0d-9d8a-162843c10455', 
+    'This is a recurring task history entry.', 
+    true, 
+    '2022-12-05 15:15:35',
+    'acde070d-8c4c-4f0d-9d8a-162843c10444'
+) ON CONFLICT DO NOTHING;
+
+INSERT INTO recurring_tasks_history (id, description, recurring_task_id)
+VALUES (
+    'acde070d-8c4c-4f0d-9d8a-162843c10456', 
+    'This is a recurring task history entry not done', 
+    'acde070d-8c4c-4f0d-9d8a-162843c10444'
 ) ON CONFLICT DO NOTHING;
 
 INSERT INTO tasks (id, name, description, due, user_id)

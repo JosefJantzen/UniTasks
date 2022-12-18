@@ -66,7 +66,8 @@ func (s *ApiService) InsertRecurringTask(w http.ResponseWriter, r *http.Request,
 		fmt.Println("InsertRecurringTask error: ", err)
 		return
 	}
-	fmt.Fprint(w, id)
+	w.Header().Add("Content-Type", "application/json")
+	fmt.Fprint(w, "{\"id\": \""+id.String()+"\" }")
 }
 
 func (s *ApiService) UpdateRecurringTask(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

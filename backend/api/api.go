@@ -41,6 +41,14 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.UpdateRecurringTask)).Methods("PUT")
 	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.DeleteRecurringTask)).Methods("DELETE")
 
+	myRouter.Handle("/api/v1/recurring-tasks/{id}/history", auth.Auth(apiService.GetRecurringTasksHistory)).Methods("GET")
+	myRouter.Handle("/api/v1/recurring-tasks-history", auth.Auth(apiService.GetRecurringTasksHistoryByUser)).Methods("GET")
+	myRouter.Handle("/api/v1/recurring-tasks-history", auth.Auth(apiService.InsertRecurringTaskHistory)).Methods("POST")
+	myRouter.Handle("/api/v1/recurring-tasks-history/{id}", auth.Auth(apiService.UpdateRecurringTaskHistory)).Methods("PUT")
+	myRouter.Handle("/api/v1/recurring-tasks-history/{id}/done", auth.Auth(apiService.UpdateRecurringTaskHistoryDone)).Methods("PUT")
+	myRouter.Handle("/api/v1/recurring-tasks-history/{id}", auth.Auth(apiService.DeleteRecurringTaskHistory)).Methods("DELETE")
+	myRouter.Handle("/api/v1/recurring-tasks/{id}/history", auth.Auth(apiService.DeleteCompleteRecurringTaskHistory)).Methods("DELETE")
+
 	myRouter.Handle("/api/v1/all", auth.Auth(apiService.GetAllTasksByUser)).Methods("GET")
 
 	//  Start HTTP

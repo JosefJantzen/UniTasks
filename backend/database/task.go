@@ -83,14 +83,19 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) ([]Task, error) {
 		var desc string
 		var due time.Time
 		var done bool
+		var doneAt sql.NullTime
 		var createdAt time.Time
 		var updatedAt time.Time
 		var userId uuid.UUID
 
-		if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
+		if err := res.Scan(&tId, &name, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId); err != nil {
 			return nil, err
 		}
-		task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+		var doneAtPointer *time.Time = nil
+		if doneAt.Valid {
+			doneAtPointer = &doneAt.Time
+		}
+		task := Task{Id: tId, Name: name, Description: desc, Done: done, DoneAt: doneAtPointer, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		tasks = append(tasks, task)
 	}
 	return tasks, nil

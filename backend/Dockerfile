@@ -21,7 +21,8 @@ RUN go build -o /uni-tasks
 FROM gcr.io/distroless/base-debian10
 
 WORKDIR /
-COPY backend/DB-initial.pgsql ./
+COPY backend/*.pgsql ./
+COPY backend/*.sql ./
 COPY backend/*.json ./
 
 COPY --from=build /uni-tasks /uni-tasks

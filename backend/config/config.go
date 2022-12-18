@@ -10,6 +10,7 @@ type Config struct {
 	DB           DB
 	Port         string
 	JwtExpireMin int
+	Debug        bool
 }
 
 func (c *Config) merge(s *Config) {
@@ -20,6 +21,7 @@ func (c *Config) merge(s *Config) {
 	if s.JwtExpireMin > c.JwtExpireMin {
 		c.JwtExpireMin = s.JwtExpireMin
 	}
+	c.Debug = s.Debug
 }
 
 type DB struct {
@@ -29,6 +31,7 @@ type DB struct {
 	Port     string
 	Database string
 	Initial  string
+	TestData string
 }
 
 func (c *DB) merge(s DB) {
@@ -49,6 +52,9 @@ func (c *DB) merge(s DB) {
 	}
 	if s.Initial != "" {
 		c.Initial = s.Initial
+	}
+	if s.TestData != "" {
+		c.TestData = s.TestData
 	}
 }
 

@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	DB   DB
-	Port string
+	DB           DB
+	Port         string
+	JwtExpireMin int
 }
 
 type DB struct {

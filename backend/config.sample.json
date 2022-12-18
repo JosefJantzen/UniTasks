@@ -7,5 +7,6 @@
         "database": "unitasks",
         "initial": "DB-initial.pgsql"
     },
-    "port": "8080"
+    "port": "8080",
+    "jwtExpireMin": 5
 }

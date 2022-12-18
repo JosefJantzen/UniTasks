@@ -5,20 +5,21 @@ import (
 	"net/http"
 
 	"unitasks.josefjantzen.de/backend/auth"
+	"unitasks.josefjantzen.de/backend/config"
 )
 
-func (s *ApiService) SignIn(w http.ResponseWriter, r *http.Request) {
+func (s *ApiService) SignIn(config *config.Config, w http.ResponseWriter, r *http.Request) {
 	var creds auth.Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	auth.SignIn(w, r, s.DB, creds)
+	auth.SignIn(w, r, s.DB, creds, config)
 }
 
-func (s *ApiService) SignUp(w http.ResponseWriter, r *http.Request) {
-	auth.SignUp(w, r, s.DB)
+func (s *ApiService) SignUp(config *config.Config, w http.ResponseWriter, r *http.Request) {
+	auth.SignUp(w, r, s.DB, config)
 }
 
 func (s *ApiService) UpdateMail(w http.ResponseWriter, r *http.Request, claims *auth.Claims) {

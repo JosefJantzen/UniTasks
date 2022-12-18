@@ -7,8 +7,21 @@ import (
 )
 
 type Config struct {
-	DB   DB
-	Port string
+	DB           DB
+	Port         string
+	JwtExpireMin int
+	Debug        bool
+}
+
+func (c *Config) merge(s *Config) {
+	c.DB.merge(s.DB)
+	if s.Port != "" {
+		c.Port = s.Port
+	}
+	if s.JwtExpireMin > c.JwtExpireMin {
+		c.JwtExpireMin = s.JwtExpireMin
+	}
+	c.Debug = s.Debug
 }
 
 type DB struct {
@@ -18,6 +31,31 @@ type DB struct {
 	Port     string
 	Database string
 	Initial  string
+	TestData string
+}
+
+func (c *DB) merge(s DB) {
+	if s.User != "" {
+		c.User = s.User
+	}
+	if s.Pwd != "" {
+		c.Pwd = s.Pwd
+	}
+	if s.Host != "" {
+		c.Host = s.Host
+	}
+	if s.Port != "" {
+		c.Port = s.Port
+	}
+	if s.Database != "" {
+		c.Database = s.Database
+	}
+	if s.Initial != "" {
+		c.Initial = s.Initial
+	}
+	if s.TestData != "" {
+		c.TestData = s.TestData
+	}
 }
 
 func (db *DB) GetDBConnectString() string {
@@ -31,7 +69,17 @@ func (db *DB) GetDBConnectString() string {
 }
 
 func Read(file string) (*Config, error) {
-	buf, err := ioutil.ReadFile(file)
+	buf, err := ioutil.ReadFile("config.sample.json")
+	if err != nil {
+		return nil, err
+	}
+
+	var sampleConfig Config
+	if err := json.Unmarshal(buf, &sampleConfig); err != nil {
+		return nil, err
+	}
+
+	buf, err = ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -41,5 +89,7 @@ func Read(file string) (*Config, error) {
 		return nil, err
 	}
 
-	return &config, err
+	sampleConfig.merge(&config)
+
+	return &sampleConfig, err
 }

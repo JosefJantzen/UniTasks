@@ -5,7 +5,10 @@
         "host": "db",
         "port": "26257",
         "database": "unitasks",
-        "initial": "DB-initial.pgsql"
+        "initial": "DB-initial.pgsql",
+        "testData": "DB-test-data.pgsql"
     },
-    "port": "8080"
+    "port": "8080",
+    "jwtExpireMin": 5,
+    "debug": false
 }

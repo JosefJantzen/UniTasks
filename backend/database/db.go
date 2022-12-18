@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/cenkalti/backoff"
@@ -37,18 +36,32 @@ func InitDB(config *config.Config) *DBService {
 		fmt.Println(err)
 		return nil
 	}
-	body, err := os.ReadFile("DB-initial.pgsql")
+	body, err := os.ReadFile(config.DB.Initial)
 	if err != nil {
-		log.Fatalf("unable to read file: %v", err)
+		fmt.Println("InitDB error: unable to read file: ", config.DB.Initial)
 	}
 	if _, err := db.Exec(string(body)); err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println("InitDB initial error: ", err)
 		return nil
 	}
-
 	if err != nil {
-		fmt.Print("Error: ")
+		fmt.Print("InitDB error: ")
 		fmt.Println(fmt.Printf("failed to initialise the store: %s", err))
+	}
+
+	if config.Debug {
+		body, err := os.ReadFile(config.DB.TestData)
+		if err != nil {
+			fmt.Println("InitDB error: unable to read file: ", config.DB.TestData)
+		}
+		if _, err := db.Exec(string(body)); err != nil {
+			fmt.Println("InitDB test data error: ", err)
+			return nil
+		}
+		if err != nil {
+			fmt.Print("InitDB error: ")
+			fmt.Println(fmt.Printf("failed to initialise the store with test data: %s", err))
+		}
 	}
 
 	service := NewDBService(db)

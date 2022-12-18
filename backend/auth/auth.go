@@ -10,10 +10,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"unitasks.josefjantzen.de/backend/config"
 	"unitasks.josefjantzen.de/backend/database"
 )
-
-var expireMin = 5
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
@@ -86,7 +85,7 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 	})
 }
 
-func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds Credentials) {
+func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds Credentials, config *config.Config) {
 	user, err := s.GetUserByMail(creds.EMail)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -98,7 +97,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
+	expirationTime := time.Now().Add(time.Duration(config.JwtExpireMin) * time.Minute)
 
 	claims := &Claims{
 		Id: user.Id,
@@ -119,7 +118,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds
 	})
 }
 
-func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
+func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService, config *config.Config) {
 	var creds Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -132,7 +131,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 		return
 	}
 	if s.CheckMailUsed(creds.EMail) {
-		SignIn(w, r, s, creds)
+		SignIn(w, r, s, creds, config)
 		return
 	}
 
@@ -151,7 +150,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService) {
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Duration(expireMin) * time.Minute)
+	expirationTime := time.Now().Add(time.Duration(config.JwtExpireMin) * time.Minute)
 
 	claims := &Claims{
 		Id: id,

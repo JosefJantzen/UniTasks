@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT, 
     due TIMESTAMP NOT NULL,
     done BOOL DEFAULT false,
+    done_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     user_id UUID REFERENCES users(id) NOT NULL
@@ -79,8 +80,19 @@ VALUES (
 INSERT INTO tasks (id, name, description, due, user_id)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10555', 
-    'Test-task', 
+    'Test-task1', 
     'This is a normal task description', 
     '2023-01-01 15:15:35', 
+    'acde070d-8c4c-4f0d-9d8a-162843c10333'
+) ON CONFLICT DO NOTHING;
+
+INSERT INTO tasks (id, name, description, due, done, done_at, user_id)
+VALUES (
+    'acde070d-8c4c-4f0d-9d8a-162843c10556', 
+    'Test-task2', 
+    'This is a normal task description2', 
+    '2023-01-01 15:15:35', 
+    true,
+    '2022-12-31 12:45:43',
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
 ) ON CONFLICT DO NOTHING;

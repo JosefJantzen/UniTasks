@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb"
@@ -10,15 +11,16 @@ import (
 )
 
 type RecurringTask struct {
-	Id          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"desc"`
-	Start       time.Time `json:"start"`
-	Ending      time.Time `json:"ending"`
-	Interval    int       `json:"interval"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	UserId      uuid.UUID `json:"userId"`
+	Id          uuid.UUID              `json:"id"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"desc"`
+	Start       time.Time              `json:"start"`
+	Ending      time.Time              `json:"ending"`
+	Interval    int                    `json:"interval"`
+	CreatedAt   time.Time              `json:"createdAt"`
+	UpdatedAt   time.Time              `json:"updatedAt"`
+	UserId      uuid.UUID              `json:"userId"`
+	History     []RecurringTaskHistory `json:"history"`
 }
 
 func (t *RecurringTask) merge(s *RecurringTask) {
@@ -37,6 +39,25 @@ func (t *RecurringTask) merge(s *RecurringTask) {
 	if s.Interval != 0 {
 		t.Interval = s.Interval
 	}
+}
+
+func (s *DBService) CheckRecurringTaskExists(id uuid.UUID, uid uuid.UUID) bool {
+	res, err := s.db.Query(
+		"SELECT id FROM recurring_tasks WHERE id=$1 AND user_id=$2",
+		id,
+		uid,
+	)
+	if err != nil {
+		return false
+	}
+	defer res.Close()
+	res.Next()
+	var Id uuid.UUID
+
+	if err := res.Scan(&Id); err != nil {
+		return false
+	}
+	return true
 }
 
 func (s *DBService) GetRecurringTaskById(id uuid.UUID, uid uuid.UUID) (*RecurringTask, error) {
@@ -66,7 +87,8 @@ func (s *DBService) GetRecurringTaskById(id uuid.UUID, uid uuid.UUID) (*Recurrin
 		return nil, err
 	}
 	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
-	return &task, nil
+	task.History, err = s.GetRecurringTasksHistory(task.Id, task.UserId)
+	return &task, err
 }
 
 func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) ([]RecurringTask, error) {
@@ -94,6 +116,10 @@ func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) ([]RecurringTask, erro
 			return nil, err
 		}
 		task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+		task.History, err = s.GetRecurringTasksHistory(task.Id, task.UserId)
+		if err != nil {
+			return nil, err
+		}
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
@@ -140,6 +166,14 @@ func (s *DBService) UpdateRecurringTask(reqTask RecurringTask) error {
 }
 
 func (s *DBService) DeleteRecurringTask(id uuid.UUID, userId uuid.UUID) error {
+	task, err := s.GetRecurringTaskById(id, userId)
+	if err != nil {
+		return err
+	}
+	if task.Id != id {
+		return errors.New("unauthorized deletion")
+	}
+	s.DeleteCompleteRecurringTaskHistory(id, userId)
 	res, err := s.db.Query(
 		"DELETE FROM recurring_tasks WHERE id = $1 AND user_id=$2",
 		id,

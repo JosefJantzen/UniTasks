@@ -22,9 +22,10 @@ CREATE TABLE IF NOT EXISTS recurring_tasks_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     description TEXT,
     done BOOL DEFAULT false,
-    done_at TIMESTAMP,
+    done_at TIMESTAMP NOT NULL DEFAULT now(),
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    user_id UUID REFERENCES users(id) NOT NULL,
     recurring_task_id UUID REFERENCES recurring_tasks(id) NOT NULL
 );
 
@@ -57,19 +58,21 @@ VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10333'
 ) ON CONFLICT DO NOTHING;
 
-INSERT INTO recurring_tasks_history (id, description, done, done_at, recurring_task_id)
+INSERT INTO recurring_tasks_history (id, description, done, done_at, user_id, recurring_task_id)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10455', 
     'This is a recurring task history entry.', 
     true, 
     '2022-12-05 15:15:35',
+    'acde070d-8c4c-4f0d-9d8a-162843c10333',
     'acde070d-8c4c-4f0d-9d8a-162843c10444'
 ) ON CONFLICT DO NOTHING;
 
-INSERT INTO recurring_tasks_history (id, description, recurring_task_id)
+INSERT INTO recurring_tasks_history (id, description, user_id, recurring_task_id)
 VALUES (
     'acde070d-8c4c-4f0d-9d8a-162843c10456', 
     'This is a recurring task history entry not done', 
+    'acde070d-8c4c-4f0d-9d8a-162843c10333',
     'acde070d-8c4c-4f0d-9d8a-162843c10444'
 ) ON CONFLICT DO NOTHING;
 

@@ -32,7 +32,7 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 	myRouter.Handle("/api/v1/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")
 	myRouter.Handle("/api/v1/tasks", auth.Auth(apiService.InsertTask)).Methods("POST")
 	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.UpdateTask)).Methods("PUT")
-	myRouter.Handle("/api/v1/tasks/done/{id}", auth.Auth(apiService.UpdateTaskDone)).Methods("PUT")
+	myRouter.Handle("/api/v1/tasks/{id}/done", auth.Auth(apiService.UpdateTaskDone)).Methods("PUT")
 	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.DeleteTask)).Methods("DELETE")
 
 	myRouter.Handle("/api/v1/recurring-tasks/{id}", auth.Auth(apiService.GetRecurringTaskById)).Methods("GET")

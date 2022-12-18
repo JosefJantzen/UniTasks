@@ -15,7 +15,7 @@ type RecurringTask struct {
 	Name        string                 `json:"name"`
 	Description string                 `json:"desc"`
 	Start       time.Time              `json:"start"`
-	Ending      time.Time              `json:"ending"`
+	Ending      *time.Time             `json:"ending"`
 	Interval    int                    `json:"interval"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	UpdatedAt   time.Time              `json:"updatedAt"`
@@ -33,7 +33,7 @@ func (t *RecurringTask) merge(s *RecurringTask) {
 	if s.Start != (time.Time{}) {
 		t.Start = s.Start
 	}
-	if s.Ending != (time.Time{}) {
+	if s.Ending != nil {
 		t.Start = s.Start
 	}
 	if s.Interval != 0 {
@@ -77,7 +77,7 @@ func (s *DBService) GetRecurringTaskById(id uuid.UUID, uid uuid.UUID) (*Recurrin
 	var name string
 	var desc string
 	var start time.Time
-	var ending time.Time
+	var ending sql.NullTime
 	var interval int
 	var createdAt time.Time
 	var updatedAt time.Time
@@ -86,7 +86,11 @@ func (s *DBService) GetRecurringTaskById(id uuid.UUID, uid uuid.UUID) (*Recurrin
 	if err := res.Scan(&tId, &name, &desc, &start, &ending, &interval, &createdAt, &updatedAt, &userId); err != nil {
 		return nil, err
 	}
-	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+	var end *time.Time = nil
+	if ending.Valid {
+		end = &ending.Time
+	}
+	task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: end, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 	task.History, err = s.GetRecurringTasksHistory(task.Id, task.UserId)
 	return &task, err
 }
@@ -106,7 +110,7 @@ func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) ([]RecurringTask, erro
 		var name string
 		var desc string
 		var start time.Time
-		var ending time.Time
+		var ending sql.NullTime
 		var interval int
 		var createdAt time.Time
 		var updatedAt time.Time
@@ -115,7 +119,11 @@ func (s *DBService) GetRecurringTasksByUser(id uuid.UUID) ([]RecurringTask, erro
 		if err := res.Scan(&tId, &name, &desc, &start, &ending, &interval, &createdAt, &updatedAt, &userId); err != nil {
 			return nil, err
 		}
-		task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: ending, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+		var end *time.Time = nil
+		if ending.Valid {
+			end = &ending.Time
+		}
+		task := RecurringTask{Id: tId, Name: name, Description: desc, Start: start, Ending: end, Interval: interval, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		task.History, err = s.GetRecurringTasksHistory(task.Id, task.UserId)
 		if err != nil {
 			return nil, err

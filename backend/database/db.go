@@ -26,14 +26,13 @@ func InitDB(config *config.Config) *DBService {
 	openDB := func() error {
 		db, err = sql.Open("postgres", config.DB.GetDBConnectString())
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("InitDB failed to open db connection. Error: ", err)
 		}
 		return err
 	}
 	err = backoff.Retry(openDB, backoff.NewExponentialBackOff())
 	if err != nil {
-		fmt.Println("Err23: ")
-		fmt.Println(err)
+		fmt.Println("InitDB failed backoff retry for opening db connection. Error: ", err)
 		return nil
 	}
 	body, err := os.ReadFile(config.DB.Initial)

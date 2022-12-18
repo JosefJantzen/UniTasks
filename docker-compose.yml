@@ -12,7 +12,6 @@ services:
       - uni-tasks-net
     ports:
       - 8080:8080
-      - 443:443
     deploy:
         restart_policy:
           condition: on-failure

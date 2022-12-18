@@ -21,15 +21,12 @@ RUN go build -o /uni-tasks
 FROM gcr.io/distroless/base-debian10
 
 WORKDIR /
-COPY backend/server.crt ./
-COPY backend/server.key ./
 COPY backend/DB-initial.pgsql ./
 COPY backend/*.json ./
 
 COPY --from=build /uni-tasks /uni-tasks
 
 EXPOSE 8080
-EXPOSE 443
 
 USER nonroot:nonroot
 

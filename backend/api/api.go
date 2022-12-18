@@ -59,14 +59,5 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 			log.Fatal("Web server (HTTP): ", err_http)
 		}
 	}()
-
-	//  Start HTTPS
-	go func() {
-		// generate SSL certificate: openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout server.key -out server.crt
-		err_https := http.ListenAndServeTLS(":443", "server.crt", "server.key", myRouter)
-		if err_https != nil {
-			log.Fatal("Web server (HTTPS): ", err_https)
-		}
-	}()
 	fmt.Println("Finished starting Server")
 }

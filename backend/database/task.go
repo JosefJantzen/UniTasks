@@ -10,14 +10,15 @@ import (
 )
 
 type Task struct {
-	Id          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"desc"`
-	Due         time.Time `json:"due"`
-	Done        bool      `json:"done"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	UserId      uuid.UUID `json:"userId"`
+	Id          uuid.UUID  `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"desc"`
+	Due         time.Time  `json:"due"`
+	Done        bool       `json:"done"`
+	DoneAt      *time.Time `json:"doneAt"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	UpdatedAt   time.Time  `json:"updatedAt"`
+	UserId      uuid.UUID  `json:"userId"`
 }
 
 func (t *Task) merge(s *Task) {
@@ -50,14 +51,19 @@ func (s *DBService) GetTaskById(id uuid.UUID, uid uuid.UUID) (*Task, error) {
 	var desc string
 	var due time.Time
 	var done bool
+	var doneAt sql.NullTime
 	var createdAt time.Time
 	var updatedAt time.Time
 	var userId uuid.UUID
 
-	if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
+	if err := res.Scan(&tId, &name, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId); err != nil {
 		return nil, err
 	}
-	task := Task{Id: tId, Name: name, Description: desc, Done: done, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+	var doneAtPointer *time.Time = nil
+	if doneAt.Valid {
+		doneAtPointer = &doneAt.Time
+	}
+	task := Task{Id: tId, Name: name, Description: desc, Done: done, DoneAt: doneAtPointer, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 	return &task, nil
 }
 
@@ -77,14 +83,19 @@ func (s *DBService) GetTasksByUser(id uuid.UUID) ([]Task, error) {
 		var desc string
 		var due time.Time
 		var done bool
+		var doneAt sql.NullTime
 		var createdAt time.Time
 		var updatedAt time.Time
 		var userId uuid.UUID
 
-		if err := res.Scan(&tId, &name, &desc, &due, &done, &createdAt, &updatedAt, &userId); err != nil {
+		if err := res.Scan(&tId, &name, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId); err != nil {
 			return nil, err
 		}
-		task := Task{Id: tId, Name: name, Description: desc, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
+		var doneAtPointer *time.Time = nil
+		if doneAt.Valid {
+			doneAtPointer = &doneAt.Time
+		}
+		task := Task{Id: tId, Name: name, Description: desc, Done: done, DoneAt: doneAtPointer, Due: due, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId}
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
@@ -95,9 +106,11 @@ func (s *DBService) InsertTask(task Task) (uuid.UUID, error) {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO tasks (name, due, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+				"INSERT INTO tasks (name, due, done, done_at, description, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 				task.Name,
 				task.Due,
+				task.Done,
+				task.DoneAt,
 				task.Description,
 				task.UserId,
 			).Scan(&id)
@@ -132,8 +145,9 @@ func (s *DBService) UpdateTaskDone(task Task) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE tasks SET done = $1, updated_at=now() WHERE id = $2 AND user_id=$3",
+				"UPDATE tasks SET done = $1, done_at=$2, updated_at=now() WHERE id = $3 AND user_id=$4",
 				task.Done,
+				task.DoneAt,
 				task.Id,
 				task.UserId,
 			)

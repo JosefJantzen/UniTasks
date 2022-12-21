@@ -1,6 +1,7 @@
 version: '1'
 services:
   uni-tasks-go:
+    image: myregistry.josefjantzen.de/josef/uni-tasks-go
     depends_on:
       - uni-tasks-roach
     build:

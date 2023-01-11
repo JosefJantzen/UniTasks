@@ -2,7 +2,7 @@
 
 if ! command -v cockroach &> /dev/null
 then
-    echo "cockroach could not be found in your PATH. Please install it and add it to your PATH: https://www.cockroachlabs.com/docs/v22.2/install-cockroachdb-windows.html"
+    echo "cockroach could not be found in your PATH. Please install it and add it to your PATH: https://www.cockroachlabs.com/docs/v22.2/install-cockroachdb-linux.html"
     exit
 fi
 

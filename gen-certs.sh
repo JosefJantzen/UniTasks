@@ -32,5 +32,6 @@ fi
 echo "Generating Certificates:";
 cockroach cert create-ca --certs-dir=certs --ca-key=priv-certs/ca.key
 cockroach cert create-node $SERVER_ALIASES --certs-dir=certs --ca-key=priv-certs/ca.key
+cockroach cert create-client root --certs-dir=certs --ca-key=priv-certs/ca.key
 echo "Done generating. That are all your certificates:"
 cockroach cert list --certs-dir=certs

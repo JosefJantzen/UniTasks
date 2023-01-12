@@ -16,7 +16,7 @@ services:
         restart_policy:
           condition: on-failure
     environment:
-      - DEBUG=true
+      - DEBUG=false
   uni-tasks-roach:
     image: cockroachdb/cockroach:latest-v20.1
     container_name: uni-tasks-roach
@@ -27,13 +27,15 @@ services:
       - 26257:26257
       - 8180:8080
     volumes:
+      - ${DB_CERTS_DIR}:/certs
       - db-1:/cockroach/cockroach-data
-    command: start-single-node --insecure
+    command: start-single-node --certs-dir=/certs
     deploy:
         restart_policy:
           condition: on-failure
     environment:
       - COCKROACH_DATABASE=${DB_DATABASE}
+      
 volumes:
   db-1:
 

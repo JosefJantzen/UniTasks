@@ -24,7 +24,7 @@ func InitDB(config *config.Config) *DBService {
 		err error
 	)
 	openDB := func() error {
-		db, err = sql.Open("postgres", config.DB.GetDBConnectString())
+		db, err = sql.Open("postgres", config.GetDBConnectString())
 		if err != nil {
 			fmt.Println("InitDB failed to open db connection. Error: ", err)
 		}

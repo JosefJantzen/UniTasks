@@ -21,3 +21,7 @@ server.key
 .env
 config.json
 temp.sql
+
+temp/*
+certs/*
+priv-certs/*

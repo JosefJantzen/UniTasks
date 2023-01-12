@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strconv"
 )
 
 type Config struct {
@@ -58,8 +60,18 @@ func (c *DB) merge(s DB) {
 	}
 }
 
-func (db *DB) GetDBConnectString() string {
-	return fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+func (c *Config) GetDBConnectString() string {
+	var db = c.DB
+	if c.Debug {
+		return fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+			db.Host,
+			db.Port,
+			db.Database,
+			db.User,
+			db.Pwd,
+		)
+	}
+	return fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s",
 		db.Host,
 		db.Port,
 		db.Database,
@@ -87,6 +99,10 @@ func Read(file string) (*Config, error) {
 	var config Config
 	if err := json.Unmarshal(buf, &config); err != nil {
 		return nil, err
+	}
+	config.Debug, err = strconv.ParseBool(os.Getenv("DEBUG"))
+	if err != nil {
+		config.Debug = false
 	}
 
 	sampleConfig.merge(&config)

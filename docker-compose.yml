@@ -12,7 +12,9 @@ services:
     networks:
       - uni-tasks-net
     ports:
-      - 8080:8080
+      - 8081:8080
+    volumes:
+      - ${BACKEND_CONFIG}:/config/config.json
     deploy:
         restart_policy:
           condition: on-failure

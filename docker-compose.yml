@@ -1,8 +1,9 @@
-version: '1'
+version: '1.0'
 services:
   uni-tasks-go:
+    image: ghcr.io/josefjantzen/uni-tasks-backend
     depends_on:
-      - uni-tasks-roach
+      - uni-tasks-db
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -11,15 +12,17 @@ services:
     networks:
       - uni-tasks-net
     ports:
-      - 8080:8080
+      - 8081:8080
+    volumes:
+      - ${BACKEND_CONFIG}:/config/config.json
     deploy:
         restart_policy:
           condition: on-failure
     environment:
       - DEBUG=true
-  uni-tasks-roach:
+  uni-tasks-db:
     image: cockroachdb/cockroach:latest-v20.1
-    container_name: uni-tasks-roach
+    container_name: uni-tasks-db
     hostname: db
     networks:
       - uni-tasks-net

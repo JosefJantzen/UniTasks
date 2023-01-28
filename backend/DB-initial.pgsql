@@ -1,14 +1,42 @@
-CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), e_mail STRING, pwd STRING);
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
+    e_mail STRING NOT NULL,
+    pwd BYTEA NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
 
-CREATE TABLE IF NOT EXISTS recurring_tasks (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name STRING, description STRING, interval INTERVAL, parentUser UUID REFERENCES users(id));
+CREATE TABLE IF NOT EXISTS recurring_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
+    name STRING NOT NULL, 
+    description TEXT,
+    start TIMESTAMP NOT NULL DEFAULT now(),
+    ending TIMESTAMP,
+    interval INT NOT NULL, 
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    user_id UUID REFERENCES users(id) NOT NULL
+);
 
-CREATE TABLE IF NOT EXISTS tasks (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name STRING, due TIMESTAMP, description STRING, parentTask UUID REFERENCES recurring_tasks(id));
+CREATE TABLE IF NOT EXISTS recurring_tasks_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    description TEXT,
+    done BOOL DEFAULT false,
+    done_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    user_id UUID REFERENCES users(id) NOT NULL,
+    recurring_task_id UUID REFERENCES recurring_tasks(id) NOT NULL
+);
 
-INSERT INTO users (id, e_mail, pwd) 
-VALUES ('acde070d-8c4c-4f0d-9d8a-162843c10333', 'admin@admin.com', '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'); /* pwd: secret */
-
-INSERT INTO recurring_tasks (id, name, description, interval, parentUser)
-VALUES ('acde070d-8c4c-4f0d-9d8a-162843c10444', 'Test-Recurring-Tas', 'This is a recurring task.', '7d', 'acde070d-8c4c-4f0d-9d8a-162843c10333');
-
-INSERT INTO tasks (id, name, description, due, parentTask)
-VALUES ('acde070d-8c4c-4f0d-9d8a-162843c10555', 'Test-task', 'This is a normal task description', '2023-01-01 15:15:35', 'acde070d-8c4c-4f0d-9d8a-162843c10444');
+CREATE TABLE IF NOT EXISTS tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
+    name STRING NOT NULL, 
+    description TEXT, 
+    due TIMESTAMP NOT NULL,
+    done BOOL DEFAULT false,
+    done_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    user_id UUID REFERENCES users(id) NOT NULL
+);

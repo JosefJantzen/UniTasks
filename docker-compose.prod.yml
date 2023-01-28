@@ -1,0 +1,47 @@
+version: '1.0'
+services:
+  uni-tasks-go:
+    image: ghcr.io/josefjantzen/uni-tasks-backend
+    depends_on:
+      - uni-tasks-db
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: uni-tasks-rest-server
+    hostname: rest-server
+    networks:
+      - uni-tasks-net
+    ports:
+      - 8081:8080
+    volumes:
+      - ${BACKEND_CONFIG}:/config/config.json
+    deploy:
+        restart_policy:
+          condition: on-failure
+    environment:
+      - DEBUG=false
+  uni-tasks-db:
+    image: cockroachdb/cockroach:latest-v20.1
+    container_name: uni-tasks-db
+    hostname: db
+    networks:
+      - uni-tasks-net
+    ports:
+      - 26257:26257
+      - 8180:8080
+    volumes:
+      - ${DB_CERTS_DIR}:/certs
+      - db-1:/cockroach/cockroach-data
+    command: start-single-node --certs-dir=/certs
+    deploy:
+        restart_policy:
+          condition: on-failure
+    environment:
+      - COCKROACH_DATABASE=${DB_DATABASE}
+      
+volumes:
+  db-1:
+
+networks:
+  uni-tasks-net:
+    driver: bridge

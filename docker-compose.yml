@@ -1,8 +1,9 @@
-version: '1'
+version: '1.0'
 services:
   uni-tasks-go:
+    image: ghcr.io/josefjantzen/uni-tasks-backend
     depends_on:
-      - uni-tasks-roach
+      - uni-tasks-db
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -11,32 +12,33 @@ services:
     networks:
       - uni-tasks-net
     ports:
-      - 8080:8080
-      - 443:443
-    environment:
-      - PGUSER=${PGUSER:-totoro}
-      - PGPASSWORD=${PGPASSWORD:?database password not set}
-      - PGHOST=${PGHOST:-db}
-      - PGPORT=${PGPORT:-26257}
-      - PGDATABASE=${PGDATABASE:-unitasks}
+      - 8081:8080
+    volumes:
+      - ${BACKEND_CONFIG}:/config/config.json
     deploy:
         restart_policy:
           condition: on-failure
-  uni-tasks-roach:
+    environment:
+      - DEBUG=true
+  uni-tasks-db:
     image: cockroachdb/cockroach:latest-v20.1
-    container_name: uni-tasks-roach
+    container_name: uni-tasks-db
     hostname: db
     networks:
       - uni-tasks-net
     ports:
       - 26257:26257
-      - 8081:8080
+      - 8180:8080
     volumes:
-      - uni-tasks-1:/cockroach/cockroach-data
+      - db-1:/cockroach/cockroach-data
     command: start-single-node --insecure
-
+    deploy:
+        restart_policy:
+          condition: on-failure
+    environment:
+      - COCKROACH_DATABASE=${DB_DATABASE}
 volumes:
-  uni-tasks-1:
+  db-1:
 
 networks:
   uni-tasks-net:

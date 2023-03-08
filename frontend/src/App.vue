@@ -1,7 +1,9 @@
 <template #app>
   <va-navbar color="primary">
     <template #left>
-      <va-navbar-item class="logo">UniTasks</va-navbar-item>
+      <va-navbar-item class="logo">
+        <va-image src="logo.png" :max-width=40 />
+      </va-navbar-item>
     </template>
     <template #center>
       <va-navbar-item>All Tasks</va-navbar-item>
@@ -9,22 +11,18 @@
       <va-navbar-item>Recurring Tasks</va-navbar-item>
     </template>
     <template #right>
-      <va-navbar-item>
-        <va-button-dropdown icon="mdi-account_circle">
-          <va-button >Settings</va-button> <br>
-        <va-button >Logout</va-button>
-        </va-button-dropdown>   
-      </va-navbar-item>
+      <AccountMenu></AccountMenu>
     </template>
   </va-navbar>
 </template>
 
 <script>
+import AccountMenu from "./components/navbar/AccountMenu.vue";
 
 export default {
   name: 'App',
   components: {
-    
+    AccountMenu
   }
 }
 </script>

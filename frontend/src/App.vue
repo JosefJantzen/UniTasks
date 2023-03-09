@@ -14,6 +14,9 @@
       <AccountMenu></AccountMenu>
     </template>
   </va-navbar>
+  <router-view></router-view>
+  
+
 </template>
 
 <script>

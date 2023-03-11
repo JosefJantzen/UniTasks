@@ -2,17 +2,12 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
 import { createVuestic, createIconsConfig } from 'vuestic-ui'
+import store from './store/index'
 import 'vuestic-ui/css'
 import 'material-design-icons-iconfont/dist/material-design-icons.min.css' 
 
 import TaskDashboard from './components/TaskDashboard.vue'
-
-/*const router = VueRouter.createRouter({
-  history: VueRouter.createWebHashHistory(),
-  routes: [
-    { path: '/', component: TaskDashboard},
-  ],
-})*/
+import Login from './components/Login.vue'
 
 createApp(App).use(
   createVuestic({
@@ -66,7 +61,8 @@ createApp(App).use(
     history: createWebHashHistory(),
     routes: [
       { path: '/', component: TaskDashboard},
+      { path: '/login', component: Login}
     ],
   }),
-)
+).use(store)
 .mount('#app')

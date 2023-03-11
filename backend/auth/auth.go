@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -13,8 +12,6 @@ import (
 	"unitasks.josefjantzen.de/backend/config"
 	"unitasks.josefjantzen.de/backend/database"
 )
-
-var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Credentials struct {
 	EMail string `json:"eMail"`
@@ -43,7 +40,7 @@ func checkPasswordHash(password, hash string) bool {
 
 func genJWT(claims *Claims, w http.ResponseWriter) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(config.JwtKeyBytes)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return ""
@@ -52,7 +49,7 @@ func genJWT(claims *Claims, w http.ResponseWriter) string {
 }
 
 func HandleCors(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Access-Control-Allow-Origin", config.FrontendUrl)
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -80,7 +77,7 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 		claims := &Claims{}
 
 		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
+			return config.JwtKeyBytes, nil
 		})
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
@@ -221,7 +218,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	tknStr := c.Value
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		return config.JwtKeyBytes, nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
@@ -244,7 +241,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	expirationTime := time.Now().Add(5 * time.Minute)
 	claims.ExpiresAt = jwt.NewNumericDate(expirationTime)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(config.JwtKeyBytes)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

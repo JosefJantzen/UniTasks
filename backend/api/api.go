@@ -25,8 +25,8 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 	myRouter.HandleFunc("/api/v1/logout", auth.Logout).Methods("GET")
 	myRouter.HandleFunc("/api/v1/refresh", auth.Refresh).Methods("GET")
 	myRouter.Handle("/api/v1/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE")
-	myRouter.Handle("/api/v1/updateMail", auth.Auth(apiService.UpdateMail)).Methods("POST")
-	myRouter.Handle("/api/v1/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("POST")
+	myRouter.Handle("/api/v1/updateMail", auth.Auth(apiService.UpdateMail)).Methods("PUT")
+	myRouter.Handle("/api/v1/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("PUT")
 
 	myRouter.Handle("/api/v1/tasks/{id}", auth.Auth(apiService.GetTaskById)).Methods("GET")
 	myRouter.Handle("/api/v1/tasks", auth.Auth(apiService.GetTasksByUser)).Methods("GET")

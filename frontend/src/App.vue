@@ -1,5 +1,5 @@
 <template #app>
-  <va-navbar color="primary">
+  <va-navbar color="primary" class="navbar">
     <template #left>
       <va-navbar-item class="logo">
         <va-image src="logo.png" :max-width=40 />
@@ -37,4 +37,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
+
+.navbar {
+  margin-bottom: 1em;
+}
+
 </style>

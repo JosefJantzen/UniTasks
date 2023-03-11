@@ -4,29 +4,17 @@ const baseURL = process.env.VUE_APP_API_ENDPOINT
 
 axios.defaults.withCredentials = true
 
-const restClient = () => {
-
-    return axios.create({
-        baseURL: baseURL,
-        
-    })
-}
-
 export default {
-    get: async (path, params) => {
-        let cli = await restClient()
-        return cli.get(path, { params: params })
+    get: async (path) => {
+        return axios.get(baseURL + path)
     },
     post: async (path, data) => {
-        let cli = await restClient()
-        return cli.post(path, data)
+        return axios.post(baseURL + path, data)
     },
     put: async (path, data) => {
-        let cli = await restClient()
-        return cli.put(path, data)
+        return axios.put(baseURL + path, data)
     },
     delete: async (path) => {
-        let cli = await restClient()
-        return cli.delete(path)
+        axios.delete(baseURL + path)
     }
 }

@@ -51,8 +51,21 @@ func genJWT(claims *Claims, w http.ResponseWriter) string {
 	return tokenString
 }
 
+func HandleCors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
+}
+
 func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		HandleCors(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			if err == http.ErrNoCookie {
@@ -115,6 +128,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 
@@ -168,6 +182,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService, confi
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 
@@ -189,6 +204,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:    "token",
 		Expires: time.Now(),
+		Path:    "/",
 	})
 }
 
@@ -238,6 +254,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 

@@ -233,8 +233,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Until(claims.ExpiresAt.Time) > 30*time.Second {
-		w.WriteHeader(http.StatusBadRequest)
+	if time.Until(claims.ExpiresAt.Time) > 2*time.Minute+30*time.Second {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 

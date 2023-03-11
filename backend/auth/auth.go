@@ -198,6 +198,7 @@ func UpdatePwd(w http.ResponseWriter, r *http.Request, s *database.DBService, p 
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+	HandleCors(w)
 	http.SetCookie(w, &http.Cookie{
 		Name:    "token",
 		Expires: time.Now(),
@@ -206,6 +207,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
+	HandleCors(w)
 	c, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {

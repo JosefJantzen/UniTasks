@@ -2,7 +2,7 @@
   <va-navbar color="primary" class="navbar">
     <template #left>
       <va-navbar-item class="nav-logo">
-        <va-image src="logo.png" :max-width=40 />
+        <va-image src="logo.png" :max-width=40 style="cursor: pointer;" @click="$router.push('/')"/>
       </va-navbar-item>
     </template>
     <template #center>

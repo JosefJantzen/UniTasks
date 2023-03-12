@@ -25,11 +25,15 @@
         </va-input>
         <br>
         <va-button @click="login"> Login </va-button>
+        <br>
+        <br>
+        <va-button @click="$router.push('/signUp')" preset="plain">Create account</va-button>
     </div>
     
 </template>
 
 <script>
+import { useToast } from 'vuestic-ui/web-components'
 import api from '../api/apiClient'
 
 export default {
@@ -47,9 +51,15 @@ export default {
                     this.$router.push('/')
                 }
             }).catch(() => {
-                console.log("Failed login")
-            })
-            
+                useToast().init({
+                    title: "Login failed",
+                    message: "Username or password wrong",
+                    color: 'danger',
+                    position: 'bottom-right',
+                    duration: 3000
+
+                })
+            })  
         }
     },
     data: () => ({

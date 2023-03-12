@@ -3,6 +3,7 @@ import api from '../api/apiClient'
 
 import TaskDashboard from '../components/TaskDashboard.vue'
 import Login from '../components/Login.vue'
+import SignUp from '../components/SignUp.vue'
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -27,7 +28,8 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         { path: '/', component: TaskDashboard, beforeEnter: requireAuth},
-        { path: '/login', component: Login}
+        { path: '/login', component: Login},
+        { path: '/signUp', component: SignUp}
     ],
 })
 

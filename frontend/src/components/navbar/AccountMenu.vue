@@ -7,7 +7,7 @@
         >
             <template #anchor>
                 <va-button>
-                    <va-avatar size="small" color="secondary" style="font-size: 100%;">{{ initial() }}</va-avatar>
+                    <va-avatar size="small" color="info" style="font-size: 100%;">{{ initial() }}</va-avatar>
                 </va-button> 
             </template>
             <va-dropdown-content class="drop">

@@ -7,11 +7,14 @@
 		</template>
 		<template #center v-if="this.$store.getters['user/get'] != null">
 			<va-navbar-item>
-				<va-button color="primary">Dashboard</va-button>
+				<va-button size="large">Dashboard</va-button>
+			</va-navbar-item>
+			<va-navbar-item>
+				<va-button size="large">New Task</va-button>
 			</va-navbar-item>
 		</template>
 		<template #right>
-			<va-button @click="github">GitHub</va-button>
+			<va-button class="git" @click="github">GitHub</va-button>
 			<AccountMenu></AccountMenu>
 		</template>
 	</va-navbar>
@@ -45,5 +48,9 @@ export default {
 .navbar {
 	margin-bottom: 1em;
 	box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+
+.git {
+	margin-right: 1rem;
 }
 </style>

@@ -42,7 +42,7 @@ import { mapActions } from 'vuex'
 export default {
     name: 'SignUp',
     methods: {
-        ...mapActions(['signUp']),
+        ...mapActions('user', ['signUp']),
         async submit() {
             if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.$data.email)) {
                 toast("Please enter valid email")

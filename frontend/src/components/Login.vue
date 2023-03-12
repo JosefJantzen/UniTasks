@@ -41,7 +41,7 @@ import { mapActions } from 'vuex'
 export default {
     name: 'Login',
     methods: {
-        ...mapActions(['signIn']),
+        ...mapActions('user', ['signIn']),
         async login() {
             try {
                 await this.signIn({

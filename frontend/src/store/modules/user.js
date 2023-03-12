@@ -42,9 +42,11 @@ const actions = {
 }
 
 export default {
-    namespace: true,
+    namespaced: true,
+    
     state: state,
     getters: getters,
     mutations: mutations,
     actions: actions
+    
 }

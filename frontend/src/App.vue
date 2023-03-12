@@ -1,7 +1,7 @@
 <template #app>
   <va-navbar color="primary" class="navbar">
     <template #left>
-      <va-navbar-item class="logo">
+      <va-navbar-item class="nav-logo">
         <va-image src="logo.png" :max-width=40 />
       </va-navbar-item>
     </template>

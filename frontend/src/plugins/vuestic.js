@@ -6,15 +6,14 @@ const vuestic = createVuestic({
     config: {
         colors: {
             variables: {
-                /*primary: '#F3F2C9',
+                primary: '#055052',
                 secondary: '#53B8BB',
                 success: '#40e583',
-                info: '#2c82e0',
+                info: '#f3f2c9',
                 danger: '#e34b4a',
                 warning: '#ffc200',
-                gray: '#055052',
                 dark: '#003638',
-                background: '#def0f0'*/
+                light: '#def0f0'
             }
         },
         icons: createIconsConfig({

@@ -5,12 +5,13 @@
 				<va-image src="logo.png" :max-width=40 style="cursor: pointer;" @click="$router.push('/')"/>
 			</va-navbar-item>
 		</template>
-		<template #center>
-			<va-navbar-item>All Tasks</va-navbar-item>
-			<va-navbar-item>Tasks</va-navbar-item>
-			<va-navbar-item>Recurring Tasks</va-navbar-item>
+		<template #center v-if="this.$store.getters['user/get'] != null">
+			<va-navbar-item>
+				<va-button color="primary">Dashboard</va-button>
+			</va-navbar-item>
 		</template>
 		<template #right>
+			<va-button @click="github">GitHub</va-button>
 			<AccountMenu></AccountMenu>
 		</template>
 	</va-navbar>
@@ -24,6 +25,11 @@ export default {
 	name: 'App',
 	components: {
 		AccountMenu
+	},
+	methods: {
+		github () {
+			window.open("https://github.com/JosefJantzen/UniTasks", '_blank');
+		}
 	}
 }
 </script>

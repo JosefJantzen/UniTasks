@@ -17,7 +17,8 @@
                 <va-button class="drop-btn" preset="secondary" icon="mdi-logout">Logout</va-button>
             </va-dropdown-content>
         </va-dropdown>  
-        <va-button v-else class="drop-btn" color="info" icon="mdi-login">Login</va-button> 
+        <va-button  v-else class="drop-btn login" color="info" icon="mdi-login"
+            @click="$router.push('/login')">Login</va-button> 
     </va-navbar-item>
 </template>
 
@@ -27,7 +28,6 @@ export default {
     methods: {
         initial() {
             let user = this.$store.getters['user/get']
-            console.log(user)
             if (user != null && user.eMail != null) {
                 return user.eMail.charAt(0).toUpperCase()
             }
@@ -46,5 +46,10 @@ export default {
 .drop-btn {
     margin-left: 1rem;
     margin-right: 1rem;
+}
+
+.login {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
 }
 </style>

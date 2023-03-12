@@ -32,7 +32,7 @@
         <va-button type="submit"> Sign up </va-button>
     </va-form>
     <br>
-    <va-button @click="$router.push('/login')" preset="plain">Login instead</va-button>
+    <va-button @click="$router.replace('/login')" preset="plain">Login instead</va-button>
 </template>
 
 <script>
@@ -58,9 +58,9 @@ export default {
                     "pwd": this.$data.pwd,
                 })
                 if (this.$route.query.redirect && this.$route.query.redirect.indexOf('/') === 0) {
-                    this.$router.push(this.$route.query.redirect)
+                    this.$router.replace(this.$route.query.redirect)
                 } else {
-                    this.$router.push('/')
+                    this.$router.replace('/')
                 }
             } catch (e) {
                 toast("Email already used")

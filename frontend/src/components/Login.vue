@@ -31,7 +31,7 @@
         <va-button type="submit"> Login </va-button>
     </va-form>
     <br>
-    <va-button @click="$router.push('/signUp')" preset="plain">Create account</va-button>
+    <va-button @click="$router.replace('/signUp')" preset="plain">Create account</va-button>
 </template>
 
 <script>
@@ -49,9 +49,9 @@ export default {
                     "pwd": this.$data.pwd,
                 })
                 if (this.$route.query.redirect && this.$route.query.redirect.indexOf('/') === 0) {
-                    this.$router.push(this.$route.query.redirect)
+                    this.$router.replace(this.$route.query.redirect)
                 } else {
-                    this.$router.push('/')
+                    this.$router.replace('/')
                 }
             } catch (e) {
                 useToast().init({

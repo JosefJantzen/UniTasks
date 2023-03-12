@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -13,8 +12,6 @@ import (
 	"unitasks.josefjantzen.de/backend/config"
 	"unitasks.josefjantzen.de/backend/database"
 )
-
-var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Credentials struct {
 	EMail string `json:"eMail"`
@@ -43,7 +40,7 @@ func checkPasswordHash(password, hash string) bool {
 
 func genJWT(claims *Claims, w http.ResponseWriter) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(config.JwtKeyBytes)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return ""
@@ -51,8 +48,21 @@ func genJWT(claims *Claims, w http.ResponseWriter) string {
 	return tokenString
 }
 
+func HandleCors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", config.FrontendUrl)
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
+}
+
 func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		HandleCors(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			if err == http.ErrNoCookie {
@@ -67,7 +77,7 @@ func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http
 		claims := &Claims{}
 
 		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
+			return config.JwtKeyBytes, nil
 		})
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
@@ -115,6 +125,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 
@@ -168,6 +179,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService, confi
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 
@@ -186,13 +198,16 @@ func UpdatePwd(w http.ResponseWriter, r *http.Request, s *database.DBService, p 
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+	HandleCors(w)
 	http.SetCookie(w, &http.Cookie{
 		Name:    "token",
 		Expires: time.Now(),
+		Path:    "/",
 	})
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
+	HandleCors(w)
 	c, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -205,7 +220,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	tknStr := c.Value
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		return config.JwtKeyBytes, nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
@@ -220,15 +235,15 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Until(claims.ExpiresAt.Time) > 30*time.Second {
-		w.WriteHeader(http.StatusBadRequest)
+	if time.Until(claims.ExpiresAt.Time) > 2*time.Minute+30*time.Second {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
 	expirationTime := time.Now().Add(5 * time.Minute)
 	claims.ExpiresAt = jwt.NewNumericDate(expirationTime)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(config.JwtKeyBytes)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -238,6 +253,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 	})
 }
 

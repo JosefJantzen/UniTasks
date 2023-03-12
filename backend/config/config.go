@@ -8,11 +8,16 @@ import (
 	"strconv"
 )
 
+var JwtKeyBytes = []byte("SecretYouShouldHide") // Don't edit this value. It's just the fallback value. To change the key edit the config.js
+var FrontendUrl = "*"                           // Don't edit this value. It's just the fallback value. To change the url edit the config.js
+
 type Config struct {
 	DB           DB
 	Port         string
+	JwtKey       string
 	JwtExpireMin int
 	Debug        bool
+	FrontendUrl  string
 }
 
 func (c *Config) merge(s *Config) {
@@ -20,10 +25,18 @@ func (c *Config) merge(s *Config) {
 	if s.Port != "" {
 		c.Port = s.Port
 	}
+	if s.JwtKey != "" {
+		c.JwtKey = s.JwtKey
+		JwtKeyBytes = []byte(s.JwtKey)
+	}
 	if s.JwtExpireMin > c.JwtExpireMin {
 		c.JwtExpireMin = s.JwtExpireMin
 	}
 	c.Debug = s.Debug
+	if s.FrontendUrl != "" {
+		c.FrontendUrl = s.FrontendUrl
+		FrontendUrl = s.FrontendUrl
+	}
 }
 
 type DB struct {

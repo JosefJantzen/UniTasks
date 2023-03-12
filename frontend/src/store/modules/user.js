@@ -24,9 +24,12 @@ const mutations = {
 
 const actions = {
     signIn: async (context, credentials)  => {
-        await api.post('/signIn', credentials)
-        delete credentials.pwd
-        context.commit('set', credentials)
+        await api.post('/signIn', credentials).then(() => {
+            delete credentials.pwd
+            context.commit('set', credentials)
+        }).catch((e) => {
+            throw e
+        })          
     }
 }
 

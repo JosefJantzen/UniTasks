@@ -1,7 +1,11 @@
 <template>
     <va-image class="logo" src="logo.png" :max-width=80 />
     <h1 class="heading">Sign in</h1>
-    <div class="login-form">
+    <va-form 
+        class="login-form"
+        tag="form"
+        @submit.prevent="login"
+    >
         <va-input
             class="inputs"
             label="EMAIL"
@@ -24,33 +28,35 @@
             </template>
         </va-input>
         <br>
-        <va-button @click="login"> Login </va-button>
-        <br>
-        <br>
-        <va-button @click="$router.push('/signUp')" preset="plain">Create account</va-button>
-    </div>
-    
+        <va-button type="submit"> Login </va-button>
+    </va-form>
+    <br>
+    <br>
+    <va-button @click="$router.push('/signUp')" preset="plain">Create account</va-button>
+
 </template>
 
 <script>
 import { useToast } from 'vuestic-ui/web-components'
-import api from '../api/apiClient'
+import { mapActions } from 'vuex'
 
 export default {
     name: 'Login',
     methods: {
+        ...mapActions(['signIn']),
         async login() {
-            await api.post('/signIn', {
-                "eMail": this.$data.email,
-                "pwd": this.$data.pwd,
-            }).then(() => {
-                
+            try {
+                await this.signIn({
+                    "eMail": this.$data.email,
+                    "pwd": this.$data.pwd,
+                })
                 if (this.$route.query.redirect && this.$route.query.redirect.indexOf('/') === 0) {
                     this.$router.push(this.$route.query.redirect)
                 } else {
                     this.$router.push('/')
                 }
-            }).catch(() => {
+            } catch (e) {
+                console.log(e)
                 useToast().init({
                     title: "Login failed",
                     message: "Username or password wrong",
@@ -59,7 +65,7 @@ export default {
                     duration: 3000
 
                 })
-            })  
+            }
         }
     },
     data: () => ({

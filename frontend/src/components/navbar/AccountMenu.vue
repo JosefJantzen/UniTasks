@@ -11,7 +11,8 @@
                 </va-button> 
             </template>
             <va-dropdown-content class="drop">
-                <va-button class="drop-btn" preset="secondary" icon="mdi-settings">Settings</va-button> 
+                <va-button class="drop-btn" preset="secondary" icon="mdi-settings"
+                    @click="$router.push('/settings')">Settings</va-button> 
                 <br>
                 <br>
                 <va-button class="drop-btn" preset="secondary" icon="mdi-logout"

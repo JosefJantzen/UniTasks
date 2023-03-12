@@ -7,10 +7,10 @@
 		</template>
 		<template #center v-if="this.$store.getters['user/get'] != null">
 			<va-navbar-item>
-				<va-button size="large">Dashboard</va-button>
+				<va-button size="large" @click="$router.replace('/')">Dashboard</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
-				<va-button size="large">New Task</va-button>
+				<va-button size="large" @click="$router.replace('newTask')">New Task</va-button>
 			</va-navbar-item>
 		</template>
 		<template #right>

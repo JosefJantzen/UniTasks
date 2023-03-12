@@ -14,7 +14,8 @@
                 <va-button class="drop-btn" preset="secondary" icon="mdi-settings">Settings</va-button> 
                 <br>
                 <br>
-                <va-button class="drop-btn" preset="secondary" icon="mdi-logout">Logout</va-button>
+                <va-button class="drop-btn" preset="secondary" icon="mdi-logout"
+                    @click="logout">Logout</va-button>
             </va-dropdown-content>
         </va-dropdown>  
         <va-button  v-else class="drop-btn login" color="info" icon="mdi-login"
@@ -23,9 +24,12 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
     name: 'AccountMenu',
     methods: {
+        ...mapActions('user', ['logout']),
         initial() {
             let user = this.$store.getters['user/get']
             if (user != null && user.eMail != null) {

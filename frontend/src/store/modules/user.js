@@ -38,13 +38,19 @@ const actions = {
         }).catch((e) => {
             throw e
         }) 
+    },
+    logout: () => {
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        location.reload()
     }
 }
 
 export default {
-    namespace: true,
+    namespaced: true,
+    
     state: state,
     getters: getters,
     mutations: mutations,
     actions: actions
+    
 }

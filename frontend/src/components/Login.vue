@@ -31,9 +31,7 @@
         <va-button type="submit"> Login </va-button>
     </va-form>
     <br>
-    <br>
     <va-button @click="$router.push('/signUp')" preset="plain">Create account</va-button>
-
 </template>
 
 <script>
@@ -56,10 +54,9 @@ export default {
                     this.$router.push('/')
                 }
             } catch (e) {
-                console.log(e)
                 useToast().init({
                     title: "Login failed",
-                    message: "Username or password wrong",
+                    message: "Email or password wrong",
                     color: 'danger',
                     position: 'bottom-right',
                     duration: 3000
@@ -74,9 +71,7 @@ export default {
         pwd: "",
     }),
 }
-
 </script>
-
 
 <style>
 .heading {

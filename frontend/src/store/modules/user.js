@@ -30,6 +30,14 @@ const actions = {
         }).catch((e) => {
             throw e
         })          
+    },
+    signUp: async (context, credentials) => {
+        await api.post('/signUp', credentials).then(() => {
+            delete credentials.pwd
+            context.commit('set', credentials)
+        }).catch((e) => {
+            throw e
+        }) 
     }
 }
 

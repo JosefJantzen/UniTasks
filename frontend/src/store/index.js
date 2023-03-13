@@ -2,6 +2,7 @@ import {createStore} from 'vuex'
 import VuexPersistence from 'vuex-persist'
 
 import user from './modules/user'
+import tasks from './modules/task'
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage
@@ -9,7 +10,8 @@ const vuexLocal = new VuexPersistence({
 
 const store = createStore({
     modules: {
-        user: user
+        user: user,
+        tasks: tasks
     },
     plugins: [vuexLocal.plugin]
 })

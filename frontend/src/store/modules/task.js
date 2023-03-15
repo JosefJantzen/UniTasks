@@ -32,6 +32,7 @@ const actions = {
         await api.get('/tasks').then((res) => {
             context.commit('clear')
             for (const task of res.data) {
+                task.recurring = false
                 context.commit('add', task)
             }
         }).catch((e) => {

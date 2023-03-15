@@ -11,13 +11,14 @@
         </template>
     </va-tabs>
     <br>
-    <TaskList v-if="currentTab == 0"></TaskList>
-    <TaskCalendar v-else-if="currentTab == 1"></TaskCalendar>
+    <div class="view">
+       <TaskList v-if="currentTab == 0"></TaskList>
+        <TaskCalendar v-else-if="currentTab == 1"></TaskCalendar> 
+    </div>
+    
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
 import TaskList from './dashboard/TaskList.vue'
 import TaskCalendar from './dashboard/TaskCalendar.vue'
 
@@ -28,10 +29,7 @@ export default {
         TaskCalendar
     },
     methods: {
-        ...mapActions('tasks', ['list']),
-        foo () {
-            this.list()
-        }
+        
     },
     data: () => ({
         currentTab: 0,
@@ -44,5 +42,11 @@ export default {
 .tab {
     padding-left: 1rem;
     padding-right: 1rem;
+}
+
+.view {
+    padding-top: 3%;
+    margin-left: 15%;
+    margin-right: 15%;
 }
 </style>

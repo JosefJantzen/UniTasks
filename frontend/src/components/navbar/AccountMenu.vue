@@ -4,6 +4,7 @@
             v-if="initial() != null"
             placement="bottom-end"
             :offset="[10, 0]"
+            trigger="hover"
         >
             <template #anchor>
                 <va-button>

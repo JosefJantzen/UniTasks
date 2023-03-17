@@ -2,7 +2,7 @@
     <va-tabs v-model="currentTab" center>
         <template #tabs>
             <va-tab
-                v-for="tab in ['List view', 'Calendar view']"
+                v-for="tab in ['Pending Tasks', 'One time tasks', 'Recurring tasks']"
                 :key="tab"
                 class="tab"
             >
@@ -12,21 +12,21 @@
     </va-tabs>
     <br>
     <div class="view">
-       <TaskList v-if="currentTab == 0"></TaskList>
-        <TaskCalendar v-else-if="currentTab == 1"></TaskCalendar> 
+       <PendingTasks v-if="currentTab == 0"></PendingTasks>
+        <OneTimeTasks v-else-if="currentTab == 1"></OneTimeTasks> 
     </div>
     
 </template>
 
 <script>
-import TaskList from './dashboard/TaskList.vue'
-import TaskCalendar from './dashboard/TaskCalendar.vue'
+import PendingTasks from './dashboard/PendingTasks.vue'
+import OneTimeTasks from './dashboard/OneTimeTasks.vue'
 
 export default {
     name: 'TaskDashboard',
     components: {
-        TaskList,
-        TaskCalendar
+        PendingTasks,
+        OneTimeTasks
     },
     methods: {
         

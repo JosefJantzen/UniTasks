@@ -16,7 +16,7 @@ const store = createStore({
         recurringTasks: recurringTasks
     },
     getters: {
-        getAllTasks: () => {
+        getPendingTasks: () => {
             let tasks = store.getters['tasks/getAll']
             let recTasks = store.getters['recurringTasks/getAll']            
             return [ ...recTasks, ...tasks]

@@ -1,11 +1,11 @@
 <template>
-    TaskCalendar
+    OneTimeTasks
 </template>
 
 <script>
 
 export default {
-    name: 'TaskCalendar'
+    name: 'OneTimeTasks'
 }
 
 </script>

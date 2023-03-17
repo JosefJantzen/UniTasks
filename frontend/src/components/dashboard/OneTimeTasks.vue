@@ -33,10 +33,7 @@ export default {
         ...mapActions('tasks', ['list']),
         ...mapActions('tasks', ['getAll']),
         getDue (task) {
-            if (task.recurring) {
-                    return  help.getDueString(task.ending.substring(0,10))
-                }
-                return help.getDueString(task.due.substring(0,10))
+            return help.getDueString(task.due.substring(0,10))
         }
     }
 }

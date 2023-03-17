@@ -14,6 +14,7 @@
     <div class="view">
        <PendingTasks v-if="currentTab == 0"></PendingTasks>
         <OneTimeTasks v-else-if="currentTab == 1"></OneTimeTasks> 
+        <RecurringTasks v-else-if="currentTab == 2"></RecurringTasks>
     </div>
     
 </template>
@@ -21,12 +22,14 @@
 <script>
 import PendingTasks from './dashboard/PendingTasks.vue'
 import OneTimeTasks from './dashboard/OneTimeTasks.vue'
+import RecurringTasks from './dashboard/RecurringTasks.vue'
 
 export default {
     name: 'TaskDashboard',
     components: {
         PendingTasks,
-        OneTimeTasks
+        OneTimeTasks,
+        RecurringTasks
     },
     methods: {
         

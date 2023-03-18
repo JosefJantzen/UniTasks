@@ -1,3 +1,4 @@
+import moment from 'moment'
 import api from '../../api/apiClient'
 
 const state = () => ({
@@ -6,7 +7,7 @@ const state = () => ({
 
 const getters = {
     getAll: (state) => {
-        return state.tasks
+        return state.tasks.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
     },
     getById: (state, id) => {
         for (const task of state.tasks) {

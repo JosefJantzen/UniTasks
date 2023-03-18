@@ -6,7 +6,7 @@ const state = () => ({
 
 const getters = {
     getAll: (state) => {
-        return state.recurringTasks
+        return state.recurringTasks.sort((a, b) => moment(String(a.ending)) - moment(String(b.ending)))
     },
     getById: (state, id) => {
         for (const task of state.recurringTasks) {

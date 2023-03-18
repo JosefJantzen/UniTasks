@@ -1,8 +1,8 @@
 <template>
     <va-card 
-        v-for="(task, index) in this.$store.getters['recurringTasks/getAll'].filter(task => !task.done || showDone)"
+        v-for="(task, index) in this.$store.getters['recurringTasks/getAll'].filter(task => this.filter(task) || showDone)"
         :key="index"
-        :stripe="task.done ? true : false"
+        :stripe="!this.filter(task)"
     >
         <div class="listItem">
             <va-card-title>
@@ -11,9 +11,8 @@
                     <va-icon name="schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done"/>
                 <va-button-dropdown 
-                    style="margin-left: 0.5rem;" 
+                    style="margin-left: auto;" 
                     preset="plain" icon="more_vert" 
                     opened-icon="more_vert" 
                     round 
@@ -23,6 +22,8 @@
                     <br>
                     <va-button class="drop-btn" preset="secondary" icon="edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br>
+                    <va-button class="drop-btn" preset="secondary" icon="delete">Mark as undone</va-button>
+                    <br>
                     <va-button class="drop-btn" preset="secondary" icon="delete">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
@@ -31,16 +32,23 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 export default {
     name: 'RecurringTasks',
     methods: {
-        ...mapActions('recurringTasks', ['list']),
-        ...mapActions('recurringTasks', ['getAll']),
+        ...mapActions('recurringTasks', ['done']),
         getDue (task) {
             return help.getDueString(task.ending.substring(0,10))
+        },
+        finished (task) {
+            task.end = help.now()
+            this.done(task)
+        },
+        filter (task) {
+            return moment(task.ending).isBefore(moment());
         }
     },
     props: {

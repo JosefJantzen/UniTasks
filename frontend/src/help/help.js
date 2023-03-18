@@ -12,6 +12,11 @@ function getDueString(v) {
     return "You have " + due.diff(moment.now(), 'days') + " days"
 }
 
+function now() {
+    return moment().format('YYYY-MM-DDTHH:mm:ss\\Z')
+}
+
 export default {
-    getDueString
+    getDueString,
+    now
 }

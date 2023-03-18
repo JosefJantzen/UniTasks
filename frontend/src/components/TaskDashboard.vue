@@ -16,7 +16,7 @@
             color="secondary"
             true-inner-label="Show done"
             false-inner-label="Hide done"
-            style="position: absolute; top: 0; right: 1.5em; float: left;"
+            style="position: absolute; top: 0; right: 5%; float: left;"
         />
     </va-tabs>
     <div class="view">

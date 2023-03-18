@@ -11,7 +11,7 @@
                     <va-icon name="schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done"/>
+                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>
                 <va-button-dropdown
                     style="margin-left: 0.5rem;" 
                     preset="plain" icon="more_vert" 
@@ -37,10 +37,15 @@ import help from '../../help/help'
 export default {
     name: 'OneTimeTasks',
     methods: {
-        ...mapActions('tasks', ['list']),
         ...mapActions('tasks', ['getAll']),
+        ...mapActions('tasks', ['done']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
+        },
+        finished (task) {
+            task.done = true
+            task.doneAt = help.now()
+            this.done(task)
         }
     },
     props: {

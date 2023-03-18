@@ -17,11 +17,11 @@
                     round 
                     placement="right-start"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="visibility">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
             <va-card-content style="display: flex;">

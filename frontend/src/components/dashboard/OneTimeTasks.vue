@@ -7,7 +7,7 @@
         <div class="listItem">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
-                <div style="margin-left: auto; display: inline-block;">
+                <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
                     <va-icon name="schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>

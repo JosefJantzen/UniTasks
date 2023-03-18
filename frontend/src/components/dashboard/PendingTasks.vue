@@ -1,9 +1,9 @@
 <template>
     <va-card 
-        v-for="(task, index) in this.$store.getters['getAllTasks']"
+        v-for="(task, index) in this.$store.getters['getPendingTasks']"
         :key="index"
     >
-        <div class="listItem hh">
+        <div class="listItem">
             <va-card-title>
                 <va-avatar v-if="task.recurring" icon="mdi-repeat" size="40px"/>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
@@ -30,13 +30,13 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 export default {
-    name: 'TaskList',
+    name: 'PendingTasks',
     methods: {
         ...mapActions('tasks', ['list']),
         ...mapActions('recurringTasks', ['listRecurring']),
         getDue (task) {
             if (task.recurring) {
-                    return  help.getDueString(task.ending.substring(0,10))
+                    return help.getDueString(task.ending.substring(0,10))
                 }
                 return help.getDueString(task.due.substring(0,10))
         }
@@ -61,7 +61,7 @@ export default {
   cursor: pointer;
 }
 
-.hh:hover {
+.listItem:hover {
     background-color: #d5e8e8;
 }
 

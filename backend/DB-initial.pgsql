@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS recurring_tasks (
 CREATE TABLE IF NOT EXISTS recurring_tasks_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     description TEXT,
+    due TIMESTAMP NOT NULL,
     done BOOL DEFAULT false,
     done_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT now(),

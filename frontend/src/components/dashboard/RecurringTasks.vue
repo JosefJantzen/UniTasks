@@ -2,6 +2,7 @@
     <va-card 
         v-for="(task, index) in this.$store.getters['recurringTasks/getAll'].filter(task => !task.done || showDone)"
         :key="index"
+        :stripe="task.done ? true : false"
     >
         <div class="listItem">
             <va-card-title>
@@ -10,8 +11,14 @@
                     <va-icon name="schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;"/>
-                <va-button-dropdown style="margin-left: 0.5rem;" preset="plain" icon="more_vert" opened-icon="more_vert" round placement="right-start">
+                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done"/>
+                <va-button-dropdown 
+                    style="margin-left: 0.5rem;" 
+                    preset="plain" icon="more_vert" 
+                    opened-icon="more_vert" 
+                    round 
+                    placement="right-start"
+                >
                     <va-button class="drop-btn" preset="secondary" icon="visibility">&nbsp;&nbsp;Show</va-button>
                     <br>
                     <va-button class="drop-btn" preset="secondary" icon="edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>

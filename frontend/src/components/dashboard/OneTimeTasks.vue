@@ -1,6 +1,6 @@
 <template>
     <va-card 
-        v-for="(task, index) in this.$store.getters['tasks/getAll']"
+        v-for="(task, index) in this.$store.getters['tasks/getAll'].filter(task => !task.done || showDone)"
         :key="index"
     >
         <div class="listItem">
@@ -35,6 +35,9 @@ export default {
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
         }
+    },
+    props: {
+        showDone: Boolean
     }
 }
 

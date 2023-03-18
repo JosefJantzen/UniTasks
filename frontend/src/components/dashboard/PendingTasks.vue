@@ -1,6 +1,6 @@
 <template>
     <va-card 
-        v-for="(task, index) in this.$store.getters['getPendingTasks']"
+        v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
     >
         <div class="listItem">
@@ -49,6 +49,9 @@ export default {
         return {
             hoverItem: false
         }
+    },
+    props: {
+        showDone: Boolean
     }
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <va-tabs v-model="currentTab" center>
+    <va-tabs v-model="currentTab" center style="position: relative;">
         <template #tabs>
             <va-tab
                 v-for="tab in ['Pending Tasks', 'One time tasks', 'Recurring tasks']"
@@ -9,12 +9,20 @@
                 {{ tab }}
             </va-tab>
         </template>
+        <va-switch
+            v-model="showDone"
+            left-label
+            off-color="info"
+            color="secondary"
+            true-inner-label="Show done"
+            false-inner-label="Hide done"
+            style="position: absolute; top: 0; right: 1.5em; float: left;"
+        />
     </va-tabs>
-    <br>
     <div class="view">
-       <PendingTasks v-if="currentTab == 0"></PendingTasks>
-        <OneTimeTasks v-else-if="currentTab == 1"></OneTimeTasks> 
-        <RecurringTasks v-else-if="currentTab == 2"></RecurringTasks>
+        <PendingTasks v-if="currentTab == 0" :showDone="this.showDone"></PendingTasks>
+        <OneTimeTasks v-else-if="currentTab == 1" :showDone="this.showDone"></OneTimeTasks> 
+        <RecurringTasks v-else-if="currentTab == 2" :showDone="this.showDone"></RecurringTasks>
     </div>
     
 </template>
@@ -36,6 +44,7 @@ export default {
     },
     data: () => ({
         currentTab: 0,
+        showDone: false,
     })
 }
 

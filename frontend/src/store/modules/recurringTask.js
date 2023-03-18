@@ -1,3 +1,4 @@
+import moment from 'moment'
 import api from '../../api/apiClient'
 
 const state = () => ({

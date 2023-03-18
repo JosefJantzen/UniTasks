@@ -26,6 +26,10 @@ const mutations = {
     add(state, task) {
         state.recurringTasks.push(task)
     },
+    update(state, task) {
+        const i = state.recurringTasks.findIndex(t => t.id == task.id)
+        state.recurringTasks[i] = task
+    }
 }
 
 const actions = {
@@ -36,6 +40,13 @@ const actions = {
                 task.recurring = true
                 context.commit('add', task)
             }
+        }).catch((e) => {
+            throw e
+        })
+    },
+    update: async (context, task) => {
+        await api.put('/recurring-tasks/' + task.id, task).then(() => {
+            context.commit('update', task)
         }).catch((e) => {
             throw e
         })

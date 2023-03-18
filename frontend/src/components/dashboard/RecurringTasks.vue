@@ -1,8 +1,8 @@
 <template>
     <va-card 
-        v-for="(task, index) in this.$store.getters['recurringTasks/getAll'].filter(task => this.filter(task) || showDone)"
+        v-for="(task, index) in this.$store.getters['recurringTasks/getAll'].filter(task => !this.filter(task) || showDone)"
         :key="index"
-        :stripe="!this.filter(task)"
+        :stripe="this.filter(task)"
     >
         <div class="listItem">
             <va-card-title>
@@ -18,13 +18,13 @@
                     round 
                     placement="right-start"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="visibility">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <br v-if="!this.filter(task)">
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-cancel" v-if="!this.filter(task)" @click="end(task)">&nbsp;End it</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="delete">Mark as undone</va-button>
-                    <br>
-                    <va-button class="drop-btn" preset="secondary" icon="delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -39,16 +39,16 @@ import help from '../../help/help'
 export default {
     name: 'RecurringTasks',
     methods: {
-        ...mapActions('recurringTasks', ['done']),
+        ...mapActions('recurringTasks', ['update']),
         getDue (task) {
             return help.getDueString(task.ending.substring(0,10))
         },
-        finished (task) {
-            task.end = help.now()
-            this.done(task)
+        end (task) {
+            task.ending = help.now()
+            this.update(task)
         },
         filter (task) {
-            return moment(task.ending).isBefore(moment());
+            return moment(task.ending).isAfter(moment());
         }
     },
     props: {

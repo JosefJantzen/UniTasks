@@ -8,7 +8,7 @@
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
-                    <va-icon name="schedule" /> 
+                    <va-icon name="mdi-schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>
                 <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>

@@ -6,7 +6,7 @@
     >
         <div class="listItem">
             <va-card-title>
-                <va-avatar v-if="task.recurring" icon="mdi-repeat" size="40px"/>
+                <va-avatar v-if="task.recurring" size="40px" font-size="15px">{{ task.count }}/{{ task.countMax }}</va-avatar>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
                 <h1 style="font-size: 20px; margin-left: 0.5rem;">{{ task.name }}</h1>
                 <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done"/>
@@ -24,10 +24,11 @@
                     <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
-            <va-card-content style="display: flex;">
-                <va-icon name="schedule"/> 
-                <p style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem;"> {{ getDue(task)}} </p>
-                <va-avatar v-if="task.recurring" size="small" style="margin-left: auto;">{{ task.count }}/{{ task.countMax }}</va-avatar>
+            <va-card-content style="display: flex;" v-if="!task.done">
+                <div style="display: flex;" >
+                    <va-icon name="mdi-schedule" style="margin-top: auto; margin-bottom: auto;"/> 
+                    <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem;"> {{ getDue(task)}} </span>
+                </div>
             </va-card-content>
         </div>
     </va-card>

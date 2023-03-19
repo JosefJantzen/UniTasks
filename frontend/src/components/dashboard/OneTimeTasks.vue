@@ -46,7 +46,7 @@ export default {
         },
         undone (task) {
             task.done = false
-            task.doneAt = ""
+            task.doneAt = null
             this.done(task)
         },
         finished (task) {

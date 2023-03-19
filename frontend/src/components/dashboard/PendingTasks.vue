@@ -9,7 +9,7 @@
                 <va-avatar v-if="task.recurring" size="40px" font-size="15px">{{ task.count }}/{{ task.countMax }}</va-avatar>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
                 <h1 style="font-size: 20px; margin-left: 0.5rem;">{{ task.name }}</h1>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done"/>
+                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>
                 <va-button-dropdown 
                     style="margin-left: 0.5rem;" 
                     preset="plain" icon="more_vert" 
@@ -42,10 +42,21 @@ export default {
     name: 'PendingTasks',
     methods: {
         ...mapActions('tasks', ['list']),
+        ...mapActions('tasks', ['done']),
         ...mapActions('recurringTasks', ['listRecurring']),
+        ...mapActions('recurringTasks', ['doneHist']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
 
+        },
+        finished (task) {
+            task.done = true
+            task.doneAt = help.now()
+            if (task.recurring) {
+                this.doneHist(task)
+                return
+            }
+            this.done(task)
         }
     },
     created () {

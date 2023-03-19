@@ -29,6 +29,11 @@ const mutations = {
     update(state, task) {
         const i = state.recurringTasks.findIndex(t => t.id == task.id)
         state.recurringTasks[i] = task
+    },
+    updateHist(state, hist) {
+        const i = state.recurringTasks.findIndex(t => t.id == hist.recurringTaskId)
+        const ii = state.recurringTasks[i].history.findIndex(t => t.id == hist.id)
+        state.recurringTasks[i].history[ii] = hist
     }
 }
 
@@ -47,6 +52,16 @@ const actions = {
     update: async (context, task) => {
         await api.put('/recurring-tasks/' + task.id, task).then(() => {
             context.commit('update', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    doneHist: async (context, task) => {
+        await api.put('/recurring-tasks-history/' + task.id + '/done', {
+            done: task.done,
+            recurringTaskId: task.recurringTaskId
+        }).then(() => {
+            context.commit('updateHist', task)
         }).catch((e) => {
             throw e
         })

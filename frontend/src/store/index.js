@@ -1,5 +1,6 @@
 import {createStore} from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import moment from 'moment'
 
 import user from './modules/user'
 import tasks from './modules/task'
@@ -32,7 +33,15 @@ const store = createStore({
                     }
                 }
             }      
-            return [...tasks, ...res]
+            return [...tasks, ...res].sort((a, b) => {
+                if (a.done && !b.done) {
+                    return 1
+                }
+                else if (!a.done && b.done) {
+                    return -1
+                }
+                return moment(String(a.due)) - moment(String(b.due))
+            })
         }
     },
     plugins: [vuexLocal.plugin]

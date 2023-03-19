@@ -7,7 +7,15 @@ const state = () => ({
 
 const getters = {
     getAll: (state) => {
-        return state.tasks.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
+        return state.tasks.sort((a, b) => {
+            if (a.done && !b.done) {
+                return 1
+            }
+            else if (!a.done && b.done) {
+                return -1
+            }
+            return moment(String(a.due)) - moment(String(b.due))
+        })
     },
     getById: (state, id) => {
         for (const task of state.tasks) {

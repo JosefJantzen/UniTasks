@@ -2,7 +2,7 @@
     <div class="" style="display: flex;">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ task.name }}</h1>
-            <va-button icon="mdi-check" size="small" round v-if="!task.done" style="margin-left: auto;"/>
+            <va-button icon="mdi-check" size="small" round v-if="!task.done" style="margin-left: auto;" @click="this.finish()"/>
             <va-button icon="mdi-edit" size="small" round preset="secondary" :style="task.done ? 'margin-left: auto;' : 'margin-left: 0.5rem;'"/>
             <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" />
     </div>
@@ -22,22 +22,34 @@
                 <span v-if="task.done" style="margin-left: 1rem; margin-top: auto; margin-bottom: auto;">{{ this.getDoneAtString() }}</span>
             </div>
         </div>
-        
     </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import help from '../help/help'
 
 export default {
     name: "TaskView",
     methods: {
+        ...mapActions('tasks', ['done']),
+        ...mapActions('recurringTasks', ['doneHist']),
         getDueString () {
             return "Due to " + help.formatTimestamp(this.task.due)
         },
         getDoneAtString () {
             return "Done at " + help.formatTimestamp(this.task.doneAt)
-        }
+        },
+        finish () {
+            let task = this.task
+            task.done = true
+            task.doneAt = help.now()
+            if (task.recurring) {
+                this.doneHist(task)
+                return
+            }
+            this.done(task)
+        },
     },
     props: {
         modal: Boolean,

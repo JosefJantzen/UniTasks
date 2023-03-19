@@ -3,6 +3,7 @@
         v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
+        @click="show(task)"
     >
         <div class="listItem">
             <va-card-title>
@@ -34,14 +35,26 @@
             </va-card-content>
         </div>
     </va-card>
+    <va-modal
+        v-model="showModal"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+    </va-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import TaskView from '../TaskView.vue'
+
 export default {
     name: 'PendingTasks',
+    components: {
+        TaskView
+    },
     methods: {
         ...mapActions('tasks', ['list']),
         ...mapActions('tasks', ['done']),
@@ -68,6 +81,13 @@ export default {
                 return
             }
             this.done(task)
+        },
+        show (task) {
+            this.showModal = true
+            this.modalTask = task
+        },
+        close () {
+            this.showModal = false
         }
     },
     created () {
@@ -76,7 +96,9 @@ export default {
     },
     data () {
         return {
-            hoverItem: false
+            hoverItem: false,
+            showModal: false,
+            modalTask: null
         }
     },
     props: {

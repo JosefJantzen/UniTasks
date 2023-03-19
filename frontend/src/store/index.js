@@ -22,12 +22,12 @@ const store = createStore({
             let res = [] 
             for (const recTask of recTasks) {
                 for (const i in recTask.history) {
-                    if (!recTask.history[i].done) {
-                        recTask.history[i].count = parseInt(i)
+                        recTask.history[i].count = parseInt(i) + 1
                         recTask.history[i].countMax = recTask.history.length
                         recTask.history[i].name = recTask.name
                         recTask.history[i].recurring = true
                         res.push(recTask.history[i])
+                    if (!recTask.history[i].done) {
                         break
                     }
                 }

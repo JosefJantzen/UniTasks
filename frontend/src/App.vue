@@ -12,6 +12,9 @@
 			<va-navbar-item>
 				<va-button size="large" @click="$router.replace('newTask')">New Task</va-button>
 			</va-navbar-item>
+			<va-navbar-item>
+				<va-button size="large" @click="$router.replace('newRecurringTask')">New Recurring Task</va-button>
+			</va-navbar-item>
 		</template>
 		<template #right>
 			<va-button class="git" @click="github">GitHub</va-button>

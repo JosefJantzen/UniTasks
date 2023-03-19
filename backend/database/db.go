@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	"github.com/cenkalti/backoff"
 	"unitasks.josefjantzen.de/backend/config"
@@ -35,7 +35,7 @@ func InitDB(config *config.Config) *DBService {
 		fmt.Println("InitDB failed backoff retry for opening db connection. Error: ", err)
 		return nil
 	}
-	body, err := os.ReadFile(config.DB.Initial)
+	body, err := ioutil.ReadFile(config.DB.Initial)
 	if err != nil {
 		fmt.Println("InitDB error: unable to read file: ", config.DB.Initial)
 	}
@@ -49,7 +49,7 @@ func InitDB(config *config.Config) *DBService {
 	}
 
 	if config.Debug {
-		body, err := os.ReadFile(config.DB.TestData)
+		body, err := ioutil.ReadFile(config.DB.TestData)
 		if err != nil {
 			fmt.Println("InitDB error: unable to read file: ", config.DB.TestData)
 		}

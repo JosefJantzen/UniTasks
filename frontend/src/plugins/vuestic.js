@@ -13,7 +13,8 @@ const vuestic = createVuestic({
                 danger: '#e34b4a',
                 warning: '#ffc200',
                 dark: '#003638',
-                light: '#def0f0'
+                light: '#def0f0',
+                white: '#ffffff'
             }
         },
         icons: createIconsConfig({

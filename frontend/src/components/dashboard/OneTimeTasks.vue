@@ -21,7 +21,7 @@
                     v-model="this.dropDown[index]"
                     @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
                     <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">

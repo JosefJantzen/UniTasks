@@ -4,7 +4,7 @@
         :key="index"
         :stripe="task.done ? true : false"
     >
-        <div class="listItem">
+        <div class="listItem" @click="show(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
@@ -18,6 +18,8 @@
                     opened-icon="more_vert" 
                     round 
                     placement="right-start"
+                    v-model="this.dropDown[index]"
+                    @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
                     <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
                     <br>
@@ -30,14 +32,26 @@
             </va-card-title>
         </div>
     </va-card>
+    <va-modal
+        v-model="showModal"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+    </va-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import TaskView from '../TaskView.vue'
+
 export default {
     name: 'OneTimeTasks',
+    components: {
+        TaskView
+    },
     methods: {
         ...mapActions('tasks', ['getAll']),
         ...mapActions('tasks', ['done']),
@@ -53,6 +67,20 @@ export default {
             task.done = true
             task.doneAt = help.now()
             this.done(task)
+        },
+        show (task) {
+            this.showModal = true
+            this.modalTask = task
+        },
+        close () {
+            this.showModal = false
+        }
+    },
+    data () {
+        return {
+            showModal: false,
+            modalTask: null,
+            dropDown: []
         }
     },
     props: {

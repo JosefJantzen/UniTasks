@@ -3,7 +3,6 @@
         v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
-        
     >
         <div class="listItem" @click="show(task)">
             <va-card-title>
@@ -98,7 +97,6 @@ export default {
     },
     data () {
         return {
-            hoverItem: false,
             showModal: false,
             modalTask: null,
             dropDown: []

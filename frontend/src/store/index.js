@@ -1,6 +1,5 @@
 import {createStore} from 'vuex'
 import VuexPersistence from 'vuex-persist'
-//import moment from 'moment'
 
 import user from './modules/user'
 import tasks from './modules/task'
@@ -19,12 +18,21 @@ const store = createStore({
     getters: {
         getPendingTasks: () => {
             let tasks = store.getters['tasks/getAll']
-            //let recTasks = store.getters['recurringTasks/getAll'] 
-            /*for (const recTask in recTasks) {
-                recTask.history.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
-                console.log(recTask)
-            }*/        
-            return tasks
+            let recTasks = store.getters['recurringTasks/getAll']
+            let res = [] 
+            for (const recTask of recTasks) {
+                for (const i in recTask.history) {
+                    if (!recTask.history[i].done) {
+                        recTask.history[i].count = parseInt(i)
+                        recTask.history[i].countMax = recTask.history.length
+                        recTask.history[i].name = recTask.name
+                        recTask.history[i].recurring = true
+                        res.push(recTask.history[i])
+                        break
+                    }
+                }
+            }      
+            return [...tasks, ...res]
         }
     },
     plugins: [vuexLocal.plugin]

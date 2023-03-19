@@ -27,6 +27,7 @@
             <va-card-content style="display: flex;">
                 <va-icon name="schedule"/> 
                 <p style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem;"> {{ getDue(task)}} </p>
+                <va-avatar v-if="task.recurring" size="small" style="margin-left: auto;">{{ task.count }}/{{ task.countMax }}</va-avatar>
             </va-card-content>
         </div>
     </va-card>
@@ -42,10 +43,8 @@ export default {
         ...mapActions('tasks', ['list']),
         ...mapActions('recurringTasks', ['listRecurring']),
         getDue (task) {
-            if (task.recurring) {
-                    return help.getDueString(task.ending.substring(0,10))
-                }
-                return help.getDueString(task.due.substring(0,10))
+            return help.getDueString(task.due.substring(0,10))
+
         }
     },
     created () {

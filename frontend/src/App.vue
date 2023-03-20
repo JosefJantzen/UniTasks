@@ -10,7 +10,7 @@
 				<va-button size="large" @click="$router.replace('/')">Dashboard</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
-				<va-button size="large" @click="$router.replace('newTask')">New Task</va-button>
+				<va-button size="large" @click="showNewTask()">New Task</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
 				<va-button size="large" @click="$router.replace('newRecurringTask')">New Recurring Task</va-button>
@@ -22,19 +22,48 @@
 		</template>
 	</va-navbar>
 	<router-view></router-view>
+	<va-modal
+        v-model="showModalNewTask"
+        hide-default-actions
+        size="large"
+    >
+        <TaskEdit @click="closeNewTask()" :task="createEmptyTask()" :edit="false"/>
+    </va-modal>
 </template>
 
 <script>
 import AccountMenu from "./components/navbar/AccountMenu.vue";
+import TaskEdit from "./components/TaskEdit.vue";
 
 export default {
 	name: 'App',
 	components: {
-		AccountMenu
+		AccountMenu,
+		TaskEdit
 	},
 	methods: {
 		github () {
 			window.open("https://github.com/JosefJantzen/UniTasks", '_blank');
+		},
+		showNewTask () {
+            this.showModalNewTask = true
+        },
+        closeNewTask() {
+            this.showModalNewTask = false
+        },
+		createEmptyTask () {
+			return {
+				name: "",
+				desc: "",
+				due: "",
+				done: false,
+				doneAt: null
+			}
+		}
+	},
+	data () {
+		return {
+			showModalNewTask: false
 		}
 	}
 }

@@ -27,7 +27,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import help from '../help/help'
+import help from '../../help/help'
 
 export default {
     name: "TaskView",

@@ -14,7 +14,7 @@
                 <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>
                 <va-button-dropdown
                     style="margin-left: 0.5rem;" 
-                    preset="plain" icon="more_vert" 
+                    preset="secondary" icon="more_vert" 
                     opened-icon="more_vert" 
                     round 
                     placement="right-start"
@@ -45,7 +45,7 @@
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
-import TaskView from '../TaskView.vue'
+import TaskView from './TaskView.vue'
 
 export default {
     name: 'OneTimeTasks',

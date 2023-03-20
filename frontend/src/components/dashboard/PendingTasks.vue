@@ -49,7 +49,7 @@
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
-import TaskView from '../TaskView.vue'
+import TaskView from './TaskView.vue'
 
 export default {
     name: 'PendingTasks',

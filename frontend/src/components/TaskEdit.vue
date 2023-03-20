@@ -7,6 +7,8 @@
         <br>
         <va-form
             autofocus
+            tag="form"
+            @submit.prevent="submit"
         >
             <va-input
                 v-model="name"
@@ -39,21 +41,35 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import help from '../help/help'
 
 export default {
     name: "TaskEdit",
     methods: {
+        ...mapActions('tasks', ['createTask']),
         getSubmitButton () {
             if (this.edit) {
                 return "Save"
             }
             return "Create"
+        },
+        async submit () {
+            let task = this.task
+            task.name = this.name
+            task.due = help.formatJsDate(this.due) + "T23:59:59.999Z"
+            task.desc = this.desc
+            if (this.edit) {
+                return
+            } else {
+                this.createTask(task)
+            }
         }
     },
     data () {
         return {
             name: this.task.name,
-            due: null,
+            due: Date.now(),
             desc: this.task.desc,
             datePicker: false
         }

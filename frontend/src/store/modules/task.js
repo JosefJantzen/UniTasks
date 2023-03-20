@@ -34,7 +34,7 @@ const mutations = {
     add(state, task) {
         state.tasks.push(task)
     },
-    done(state, task) {
+    update(state, task) {
         const i = state.tasks.findIndex(t => t.id == task.id)
         state.tasks[i] = task
     }
@@ -57,7 +57,15 @@ const actions = {
             "done": task.done,
             "doneAt": task.doneAt
         }).then(() => {
-            context.commit('done', task)
+            context.commit('update', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    createTask: async (context, task) => {
+        await api.post('/tasks', task).then((res) => {
+            task.id = res.data.id
+            context.commit('add', task)
         }).catch((e) => {
             throw e
         })

@@ -23,17 +23,21 @@ const mutations = {
     clear: (state) => {
         state.recurringTasks = []
     },
-    add(state, task) {
+    add: (state, task) => {
         state.recurringTasks.push(task)
     },
-    update(state, task) {
+    update: (state, task) => {
         const i = state.recurringTasks.findIndex(t => t.id == task.id)
         state.recurringTasks[i] = task
     },
-    updateHist(state, hist) {
+    updateHist: (state, hist) => {
         const i = state.recurringTasks.findIndex(t => t.id == hist.recurringTaskId)
         const ii = state.recurringTasks[i].history.findIndex(t => t.id == hist.id)
         state.recurringTasks[i].history[ii] = hist
+    },
+    delete: (state, id) => {
+        const i = state.recurringTasks.findIndex(t => t.id == id)
+        state.recurringTasks.splice(i, 1)
     }
 }
 
@@ -49,7 +53,15 @@ const actions = {
             throw e
         })
     },
-    update: async (context, task) => {
+    createRecurring: async (context, task) => {
+        await api.post('/recurring-tasks', task).then((res) => {
+            task.id = res.data.id
+            context.commit('add', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    updateRecurring: async (context, task) => {
         await api.put('/recurring-tasks/' + task.id, task).then(() => {
             context.commit('update', task)
         }).catch((e) => {
@@ -62,6 +74,13 @@ const actions = {
             recurringTaskId: task.recurringTaskId
         }).then(() => {
             context.commit('updateHist', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    deleteRecurring: async (context, task) => {
+        await api.delete('/recurring-tasks/' + task.id).then(() => {
+            context.commit('delete', task.id)
         }).catch((e) => {
             throw e
         })

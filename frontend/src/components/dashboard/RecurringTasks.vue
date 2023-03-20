@@ -53,13 +53,13 @@ export default {
         RecurringTaskView
     },
     methods: {
-        ...mapActions('recurringTasks', ['update']),
+        ...mapActions('recurringTasks', ['updateRecurring']),
         getDue (task) {
             return help.getDueString(task.ending.substring(0,10))
         },
         end (task) {
             task.ending = help.now()
-            this.update(task)
+            this.updateRecurring(task)
         },
         filter (task) {
             return moment.utc(task.ending).isAfter(moment.utc());

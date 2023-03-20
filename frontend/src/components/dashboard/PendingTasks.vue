@@ -66,7 +66,7 @@ export default {
         TaskEdit
     },
     methods: {
-        ...mapActions('tasks', ['list']),
+        ...mapActions('tasks', ['listTask']),
         ...mapActions('tasks', ['done']),
         ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['listRecurring']),
@@ -124,7 +124,7 @@ export default {
         }
     },
     created () {
-        this.list()
+        this.listTask()
         this.listRecurring()
     },
     data () {

@@ -45,7 +45,7 @@ const mutations = {
 }
 
 const actions = {
-    list: async (context) => {
+    listTask: async (context) => {
         await api.get('/tasks').then((res) => {
             context.commit('clear')
             for (const task of res.data) {

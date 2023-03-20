@@ -27,7 +27,7 @@
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.deleteTask(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -64,6 +64,7 @@ export default {
     methods: {
         ...mapActions('tasks', ['getAll']),
         ...mapActions('tasks', ['done']),
+        ...mapActions('tasks', ['deleteTask']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
         },

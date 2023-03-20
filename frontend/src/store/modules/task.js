@@ -31,12 +31,16 @@ const mutations = {
     clear: (state) => {
         state.tasks = []
     },
-    add(state, task) {
+    add: (state, task) => {
         state.tasks.push(task)
     },
-    update(state, task) {
+    update: (state, task) => {
         const i = state.tasks.findIndex(t => t.id == task.id)
         state.tasks[i] = task
+    },
+    delete: (state, id) => {
+        const i = state.tasks.findIndex(t => t.id == id)
+        state.tasks.splice(i, 1)
     }
 }
 
@@ -66,6 +70,13 @@ const actions = {
         await api.post('/tasks', task).then((res) => {
             task.id = res.data.id
             context.commit('add', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    deleteTask: async (context, task) => {
+        await api.delete('/tasks/' + task.id).then(() => {
+            context.commit('delete', task.id)
         }).catch((e) => {
             throw e
         })

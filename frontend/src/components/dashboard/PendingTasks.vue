@@ -25,7 +25,7 @@
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
             <va-card-content style="display: flex;" v-if="!task.done">
@@ -68,6 +68,7 @@ export default {
     methods: {
         ...mapActions('tasks', ['list']),
         ...mapActions('tasks', ['done']),
+        ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['listRecurring']),
         ...mapActions('recurringTasks', ['doneHist']),
         getDue (task) {
@@ -112,6 +113,14 @@ export default {
         closeEdit() {
             this.showModalTaskEdit = false
             this.showModalRecurringTaskEdit = false
+        },
+        delete (task) {
+            if (task.recurring) {
+                return
+            }
+            else {
+                this.deleteTask(task)
+            }
         }
     },
     created () {

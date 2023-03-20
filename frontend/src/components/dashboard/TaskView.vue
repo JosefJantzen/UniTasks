@@ -4,7 +4,7 @@
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ task.name }}</h1>
             <va-button icon="mdi-check" size="small" round v-if="!task.done" style="margin-left: auto;" @click="this.finish()"/>
             <va-button icon="mdi-edit" size="small" round preset="secondary" :style="task.done ? 'margin-left: auto;' : 'margin-left: 0.5rem;'" @click="showEdit(task)"/>
-            <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" />
+            <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" @click="this.delete(task)"/>
     </div>
     <br>
     <div style="margin-left: 1em; margin-right: 1em;">
@@ -45,6 +45,7 @@ export default {
     },
     methods: {
         ...mapActions('tasks', ['done']),
+        ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['doneHist']),
         getDueString () {
             return "Due to " + help.formatTimestamp(this.task.due)
@@ -75,6 +76,15 @@ export default {
         closeEdit() {
             this.showModalTaskEdit = false
             this.showModalRecurringTaskEdit = false
+        },
+        delete (task) {
+            this.$emit('click')
+            if (task.recurring) {
+                return
+            }
+            else {
+                this.deleteTask(task)
+            }
         }
     },
     data () {

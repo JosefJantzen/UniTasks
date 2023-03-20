@@ -15,11 +15,21 @@ function getDueString(v) {
     return "You have " + due.diff(moment.now(), 'days') + " days"
 }
 
+function formatTimestamp(v) {
+    return moment.utc(v).format('DD.MM.YYYY [at] HH:mm')
+}
+
+function formatDate(v) {
+    return moment.utc(v).format('DD.MM.YYYY')
+}
+
 function now() {
     return moment.utc().format('YYYY-MM-DDTHH:mm:ss\\Z')
 }
 
 export default {
     getDueString,
-    now
+    now,
+    formatTimestamp,
+    formatDate
 }

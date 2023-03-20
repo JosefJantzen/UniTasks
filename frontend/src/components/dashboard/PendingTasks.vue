@@ -4,20 +4,22 @@
         :key="index"
         :stripe="task.done ? true : false"
     >
-        <div class="listItem">
+        <div class="listItem" @click="show(task)">
             <va-card-title>
                 <va-avatar v-if="task.recurring" size="40px" font-size="15px">{{ task.count }}/{{ task.countMax }}</va-avatar>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
                 <h1 style="font-size: 20px; margin-left: 0.5rem;">{{ task.name }}</h1>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>
+                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click.stop="finished(task)"/>
                 <va-button-dropdown 
                     style="margin-left: 0.5rem;" 
-                    preset="plain" icon="more_vert" 
+                    preset="secondary" icon="more_vert" 
                     opened-icon="more_vert" 
                     round 
                     placement="right-start"
+                    v-model="this.dropDown[index]"
+                    @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
                     <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
@@ -34,14 +36,26 @@
             </va-card-content>
         </div>
     </va-card>
+    <va-modal
+        v-model="showModal"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+    </va-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import TaskView from './TaskView.vue'
+
 export default {
     name: 'PendingTasks',
+    components: {
+        TaskView
+    },
     methods: {
         ...mapActions('tasks', ['list']),
         ...mapActions('tasks', ['done']),
@@ -68,6 +82,13 @@ export default {
                 return
             }
             this.done(task)
+        },
+        show (task) {
+            this.showModal = true
+            this.modalTask = task
+        },
+        close () {
+            this.showModal = false
         }
     },
     created () {
@@ -76,7 +97,9 @@ export default {
     },
     data () {
         return {
-            hoverItem: false
+            showModal: false,
+            modalTask: null,
+            dropDown: []
         }
     },
     props: {

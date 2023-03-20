@@ -4,7 +4,7 @@
         :key="index"
         :stripe="!this.filter(task)"
     >
-        <div class="listItem">
+        <div class="listItem" @click="show(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="this.filter(task)">
@@ -13,12 +13,14 @@
                 </div>
                 <va-button-dropdown 
                     style="margin-left: auto;" 
-                    preset="plain" icon="more_vert" 
+                    preset="secondary" icon="more_vert" 
                     opened-icon="more_vert" 
                     round 
                     placement="right-start"
+                    v-model="this.dropDown[index]"
+                    @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility"  @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
                     <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="this.filter(task)">
@@ -29,6 +31,13 @@
             </va-card-title>
         </div>
     </va-card>
+    <va-modal
+        v-model="showModal"
+        hide-default-actions
+        size="medium"
+    >
+        <RecurringTaskView :modal="true" :task="this.modalTask" @click="close()"/>
+    </va-modal>
 </template>
 
 <script>
@@ -36,8 +45,13 @@ import moment from 'moment'
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import RecurringTaskView from './RecurringTaskView.vue'
+
 export default {
     name: 'RecurringTasks',
+    components: {
+        RecurringTaskView
+    },
     methods: {
         ...mapActions('recurringTasks', ['update']),
         getDue (task) {
@@ -49,6 +63,20 @@ export default {
         },
         filter (task) {
             return moment.utc(task.ending).isAfter(moment.utc());
+        },
+        show (task) {
+            this.showModal = true
+            this.modalTask = task
+        },
+        close () {
+            this.showModal = false
+        }
+    },
+    data () {
+        return {
+            showModal: false,
+            modalTask: null,
+            dropDown: []
         }
     },
     props: {

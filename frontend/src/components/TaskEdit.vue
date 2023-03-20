@@ -1,5 +1,5 @@
 <template>
-    <div :style="this.datePicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
+    <div :style="this.datePicker || this.timePicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
         <div class="" style="display: flex;">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">New Task</h1>
@@ -20,8 +20,14 @@
             <va-date-input
                 v-model="due"
                 v-model:is-open="datePicker"
-                label="Due"
+                label="Due date"
                 first-weekday="Monday"
+                style="margin-bottom: 1em;"
+            /><br>
+            <va-time-input
+                v-model="due"
+                v-model:is-open="timePicker"
+                label="Due time"
                 style="margin-bottom: 1em;"
             /><br>
             <va-input
@@ -58,7 +64,7 @@ export default {
         async submit () {
             let task = this.task
             task.name = this.name
-            task.due = help.formatJsDate(this.due) + "T23:59:59.999Z"
+            task.due = help.formatJsDate(this.due)
             task.desc = this.desc
             if (this.edit) {
                 this.updateTask(task)
@@ -70,9 +76,10 @@ export default {
     data () {
         return {
             name: this.task.name,
-            due: Date.now(),
+            due: new Date(this.task.due),
             desc: this.task.desc,
-            datePicker: false
+            datePicker: false,
+            timePicker: false
         }
     },
     props: {

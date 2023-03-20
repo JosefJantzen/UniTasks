@@ -55,7 +55,7 @@ export default {
 			return {
 				name: "",
 				desc: "",
-				due: "",
+				due: new Date().toISOString(),
 				done: false,
 				doneAt: null
 			}

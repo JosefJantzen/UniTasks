@@ -74,6 +74,13 @@ const actions = {
             throw e
         })
     },
+    updateTask: async (context, task) => {
+        await api.put('/tasks/' + task.id, task).then(() => {
+            context.commit('update', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
     deleteTask: async (context, task) => {
         await api.delete('/tasks/' + task.id).then(() => {
             context.commit('delete', task.id)

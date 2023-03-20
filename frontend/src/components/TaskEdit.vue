@@ -48,6 +48,7 @@ export default {
     name: "TaskEdit",
     methods: {
         ...mapActions('tasks', ['createTask']),
+        ...mapActions('tasks', ['updateTask']),
         getSubmitButton () {
             if (this.edit) {
                 return "Save"
@@ -60,7 +61,7 @@ export default {
             task.due = help.formatJsDate(this.due) + "T23:59:59.999Z"
             task.desc = this.desc
             if (this.edit) {
-                return
+                this.updateTask(task)
             } else {
                 this.createTask(task)
             }

@@ -17,24 +17,58 @@
     </div>
     <br>
     <div>
-        <h1 style="text-align: center;">History</h1>
-        <va-data-table :items="this.getHistory()" :columns="this.histCols">
+        <h1 style="text-align: center; margin-bottom: 0.25rem;">History</h1>
+        <va-data-table 
+            :items="this.getHistory()" 
+            :columns="this.histCols"
+            clickable hoverable
+            sticky-header
+            :item-size="46"
+            :wrapper-size="400"
+            @row:click="rowClick"
+        >
             <template #header(count)>
                 Counter
+            </template>
+            <template #header(icon)>
+                Done
+            </template>
+            <template #header(actions)>
+                {{ this.countDoneHist() }}/{{ this.task.history.length }}
+            </template>
+            <template #cell(count)="{ rowIndex }">
+                {{ rowIndex +1 }}
             </template>
             <template #cell(icon)="{ value }">
                 <va-icon :name="value"/>
             </template>
+            <template #cell(actions)="{ rowIndex }">
+                <va-button preset="secondary" round icon="mdi-edit" @click.stop="rowIndex"/>
+                <va-button preset="secondary" round icon="mdi-delete" @click.stop="rowIndex"/>
+            </template>
         </va-data-table>
     </div>
+    <va-modal
+        v-model="showModal"
+        hide-default-actions
+        size="medium"
+        blur
+    >
+        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+    </va-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import TaskView from './TaskView.vue'
+
 export default {
     name: "RecurringTaskView",
+    components: {
+        TaskView
+    },
     methods: {
         ...mapActions('tasks', ['done']),
         ...mapActions('recurringTasks', ['doneHist']),
@@ -50,10 +84,8 @@ export default {
         getHistory () {
             let task = this.task
             for(const i in task.history) {
-                task.history[i].count = parseInt(i) +1
                 task.history[i].icon = this.getIcon(task.history[i].done)
             }
-            console.log(task.history)
             return task.history
         },
         getNextHist() {
@@ -63,6 +95,15 @@ export default {
                     return task.history[i]
                 }
             }
+        },
+        countDoneHist() {
+            let res = 0
+            for (const t of this.task.history) {
+                if (t.done) {
+                    res++
+                }
+            }
+            return res
         },
         finish () {
             let task = this.task
@@ -79,6 +120,16 @@ export default {
                 return "mdi-check"
             }
             return "mdi-close"
+        },
+        rowClick(event) {
+            this.modalTask = event.item
+            this.showModal = true
+        },
+        show (task) {
+            this.modalTask = task
+        },
+        close () {
+            this.showModal = false
         }
     },
     data () {
@@ -86,8 +137,11 @@ export default {
             histCols: [
                 {key: "count"},
                 {key: "name"},
-                {key: "icon"}
-            ]
+                {key: "icon"},
+                {key: "actions"}
+            ],
+            showModal: false,
+            modalTask: null,
         }
     },
     props: {

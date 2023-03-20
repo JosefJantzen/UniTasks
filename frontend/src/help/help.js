@@ -19,6 +19,10 @@ function formatTimestamp(v) {
     return moment.utc(v).format('DD.MM.YYYY [at] HH:mm')
 }
 
+function formatDate(v) {
+    return moment.utc(v).format('DD.MM.YYYY')
+}
+
 function now() {
     return moment.utc().format('YYYY-MM-DDTHH:mm:ss\\Z')
 }
@@ -26,5 +30,6 @@ function now() {
 export default {
     getDueString,
     now,
-    formatTimestamp
+    formatTimestamp,
+    formatDate
 }

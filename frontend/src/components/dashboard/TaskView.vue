@@ -3,7 +3,7 @@
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ task.name }}</h1>
             <va-button icon="mdi-check" size="small" round v-if="!task.done" style="margin-left: auto;" @click="this.finish()"/>
-            <va-button icon="mdi-edit" size="small" round preset="secondary" :style="task.done ? 'margin-left: auto;' : 'margin-left: 0.5rem;'"/>
+            <va-button icon="mdi-edit" size="small" round preset="secondary" :style="task.done ? 'margin-left: auto;' : 'margin-left: 0.5rem;'" @click="showEdit(task)"/>
             <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" />
     </div>
     <br>
@@ -23,14 +23,26 @@
             </div>
         </div>
     </div>
+    <va-modal
+        v-model="showModalTaskEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.modalTask" :edit="true" @click="closeEdit()"/>
+    </va-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import help from '../../help/help'
 
+import TaskEdit from '../TaskEdit.vue'
+
 export default {
     name: "TaskView",
+    components: {
+        TaskEdit
+    },
     methods: {
         ...mapActions('tasks', ['done']),
         ...mapActions('recurringTasks', ['doneHist']),
@@ -50,6 +62,27 @@ export default {
             }
             this.done(task)
         },
+        showEdit (task) {
+            if (task.recurring) {
+                this.showModalRecurringTaskEdit = true
+            }
+            else {
+                this.showModalTaskEdit = true
+                this.modalTask = task
+            }
+            
+        },
+        closeEdit() {
+            this.showModalTaskEdit = false
+            this.showModalRecurringTaskEdit = false
+        }
+    },
+    data () {
+        return {
+            showModalTaskEdit: false,
+            showModalRecurringTaskEdit: false,
+            modalTask: null
+        }
     },
     props: {
         modal: Boolean,

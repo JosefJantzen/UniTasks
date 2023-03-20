@@ -21,7 +21,7 @@
                 >
                     <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
@@ -43,6 +43,13 @@
     >
         <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
     </va-modal>
+    <va-modal
+        v-model="showModalTaskEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.modalTask" :edit="true" @click="closeEdit()"/>
+    </va-modal>
 </template>
 
 <script>
@@ -50,11 +57,13 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 import TaskView from './TaskView.vue'
+import TaskEdit from '../TaskEdit.vue'
 
 export default {
     name: 'PendingTasks',
     components: {
-        TaskView
+        TaskView,
+        TaskEdit
     },
     methods: {
         ...mapActions('tasks', ['list']),
@@ -89,6 +98,20 @@ export default {
         },
         close () {
             this.showModal = false
+        },
+        showEdit (task) {
+            if (task.recurring) {
+                this.showModalRecurringTaskEdit = true
+            }
+            else {
+                this.showModalTaskEdit = true
+                this.modalTask = task
+            }
+            
+        },
+        closeEdit() {
+            this.showModalTaskEdit = false
+            this.showModalRecurringTaskEdit = false
         }
     },
     created () {
@@ -99,7 +122,9 @@ export default {
         return {
             showModal: false,
             modalTask: null,
-            dropDown: []
+            dropDown: [],
+            showModalTaskEdit: false,
+            showModalRecurringTaskEdit: false,
         }
     },
     props: {

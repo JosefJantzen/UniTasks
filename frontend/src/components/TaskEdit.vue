@@ -9,6 +9,7 @@
             autofocus
             tag="form"
             @submit.prevent="submit"
+            @click.stop=""
         >
             <va-input
                 v-model="name"
@@ -23,12 +24,14 @@
                 label="Due date"
                 first-weekday="Monday"
                 style="margin-bottom: 1em;"
+                @click.stop="datePicker = !datePicker"
             /><br>
             <va-time-input
                 v-model="due"
                 v-model:is-open="timePicker"
                 label="Due time"
                 style="margin-bottom: 1em;"
+                @click.stop="timePicker = !timePicker"
             /><br>
             <va-input
                 v-model="desc"
@@ -40,10 +43,9 @@
                 @click.stop=""
             >
             </va-input><br>
-            <va-button type="submit">{{ getSubmitButton() }}</va-button>
+            <va-button type="submit" @click="this.$emit('click')">{{ getSubmitButton() }}</va-button>
         </va-form>
     </div>
-    
 </template>
 
 <script>

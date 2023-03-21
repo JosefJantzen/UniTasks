@@ -3,7 +3,7 @@
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ task.name }}</h1>
             <va-button icon="mdi-edit" size="small" round preset="secondary" style="margin-left: auto;" @click="showEdit()"/>
-            <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" />
+            <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" @click="this.delete(task)"/>
     </div>
     <br>
     <div style="margin-left: 1em; margin-right: 1em;">
@@ -47,7 +47,7 @@
             </template>
             <template #cell(actions)="{ rowIndex }">
                 <va-button preset="secondary" round icon="mdi-edit" @click.stop="this.showEditHist(rowIndex)"/>
-                <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.delete(rowIndex)"/>
+                <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.deleteHist(rowIndex)"/>
             </template>
         </va-data-table>
     </div>
@@ -101,6 +101,7 @@ export default {
     methods: {
         ...mapActions('tasks', ['done']),
         ...mapActions('recurringTasks', ['doneHist']),
+        ...mapActions('recurringTasks', ['deleteRecurring']),
         ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getTimeString () {
             return "From " + help.formatDate(this.task.start) + " to " + help.formatDate(this.task.ending)
@@ -182,7 +183,11 @@ export default {
         closeEdit () {
             this.showModalEdit = false
         },
-        delete (i) {
+        delete (task) {
+            this.$emit('click')
+            this.deleteRecurring(task)
+        },
+        deleteHist (i) {
             this.deleteRecurringHist(this.getHistory()[i])
         },
 		createEmptyTaskHist () {

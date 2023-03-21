@@ -26,7 +26,7 @@
                     <br v-if="this.filter(task)">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-cancel" v-if="this.filter(task)" @click="end(task)">&nbsp;End it</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -63,6 +63,7 @@ export default {
     },
     methods: {
         ...mapActions('recurringTasks', ['updateRecurring']),
+        ...mapActions('recurringTasks', ['deleteRecurring']),
         getDue (task) {
             return help.getDueString(task.ending.substring(0,10))
         },
@@ -86,6 +87,9 @@ export default {
         },
         closeEdit () {
             this.showModalEdit = false
+        },
+        delete (task) {
+            this.deleteRecurring(task)
         }
     },
     data () {

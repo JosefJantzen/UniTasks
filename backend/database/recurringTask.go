@@ -138,8 +138,10 @@ func (s *DBService) InsertRecurringTask(task RecurringTask) (uuid.UUID, error) {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO recurring_tasks (name, interval, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+				"INSERT INTO recurring_tasks (name, start, ending, interval, description, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 				task.Name,
+				task.Start,
+				task.Ending,
 				task.Interval,
 				task.Description,
 				task.UserId,

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -54,6 +55,21 @@ func HandleCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
+}
+
+func createCookie(value string, expires time.Time, config *config.Config) *http.Cookie {
+	var s = strings.Replace(config.FrontendUrl, "https://", "", 1)
+	s = strings.Replace(s, "http://", "", 1)
+
+	return &http.Cookie{
+		Name:     "token",
+		Value:    value,
+		Expires:  expires,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+		Domain:   s,
+	}
 }
 
 func Auth(endpoint func(w http.ResponseWriter, r *http.Request, c *Claims)) http.Handler {
@@ -121,12 +137,7 @@ func SignIn(w http.ResponseWriter, r *http.Request, s *database.DBService, creds
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-		Path:    "/",
-	})
+	http.SetCookie(w, createCookie(tokenString, expirationTime, config))
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService, config *config.Config) {
@@ -175,12 +186,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, s *database.DBService, confi
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-		Path:    "/",
-	})
+	http.SetCookie(w, createCookie(tokenString, expirationTime, config))
 }
 
 func UpdatePwd(w http.ResponseWriter, r *http.Request, s *database.DBService, p Password) {
@@ -199,11 +205,8 @@ func UpdatePwd(w http.ResponseWriter, r *http.Request, s *database.DBService, p 
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	HandleCors(w)
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Expires: time.Now(),
-		Path:    "/",
-	})
+	http.SetCookie(w, createCookie("", time.Now(), &config.Config{}))
+
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
@@ -250,10 +253,13 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-		Path:    "/",
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expirationTime,
+		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
+		Domain:   "unitasks.josefjantzen.de",
 	})
 }
 

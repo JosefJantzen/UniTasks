@@ -40,7 +40,7 @@ const actions = {
         }) 
     },
     logout: () => {
-        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None; Domain=" + window.location.hostname + ";";
         location.reload()
     }
 }

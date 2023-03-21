@@ -29,6 +29,7 @@
             :item-size="46"
             :wrapper-size="400"
             @row:click="rowClick"
+            virtual-scroller
         >
             <template #header(count)>
                 Counter

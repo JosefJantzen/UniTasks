@@ -11,7 +11,7 @@
         <p style="text-decoration: #99a4a5;">{{ task.desc }}</p><br>
         <div>
             <div style="display: flex;">
-                <div style="display: flex; margin: auto 0;">
+                <div style="display: flex; margin: auto 0; margin-right: 1em;">
                     <va-icon name="mdi-schedule"/>
                     <span style="margin-left: 1rem; margin-top: auto; margin-bottom: auto;">{{ this.getDueString() }}</span>
                 </div>

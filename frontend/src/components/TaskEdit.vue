@@ -2,7 +2,7 @@
     <div :style="this.datePicker || this.timePicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
         <div class="" style="display: flex;">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
-            <h1 style="margin: auto 1rem; font-size: 25px;">New Task</h1>
+            <h1 style="margin: auto 1rem; font-size: 25px;">{{ getHeading() }}</h1>
         </div>
         <br>
         <va-form
@@ -17,6 +17,7 @@
                 :rules="[(v) => v != '']"
                 style="margin-bottom: 1em;"
                 @click.stop=""
+                :disabled="this.task.recurring"
             /><br>
             <va-date-input
                 v-model="due"
@@ -57,6 +58,14 @@ export default {
     methods: {
         ...mapActions('tasks', ['createTask']),
         ...mapActions('tasks', ['updateTask']),
+        ...mapActions('recurringTasks', ['updateRecurringHist']),
+        ...mapActions('recurringTasks', ['createRecurringHist']),
+        getHeading () {
+            if (this.edit) {
+                return "Edit Task"
+            }
+            return "New Task"
+        },
         getSubmitButton () {
             if (this.edit) {
                 return "Save"
@@ -69,9 +78,20 @@ export default {
             task.due = help.formatJsDate(this.due)
             task.desc = this.desc
             if (this.edit) {
-                this.updateTask(task)
+                if (task.recurring) {
+                    this.updateRecurringHist(task)
+                } else {
+                    this.updateTask(task)
+                }
+                
             } else {
-                this.createTask(task)
+                console.log(task)
+                console.log(this.task)
+                if (task.recurring) {
+                    this.createRecurringHist(task)
+                } else {
+                    this.createTask(task)                    
+                }
             }
         }
     },

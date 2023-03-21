@@ -42,6 +42,11 @@ const mutations = {
     delete: (state, id) => {
         const i = state.recurringTasks.findIndex(t => t.id == id)
         state.recurringTasks.splice(i, 1)
+    },
+    deleteHist: (state, hist) => {
+        const i = state.recurringTasks.findIndex(t => t.id == hist.recurringTaskId)
+        const ii = state.recurringTasks[i].history.findIndex(t => t.id == hist.id)
+        state.recurringTasks[i].history.splice(ii, 1)
     }
 }
 
@@ -66,7 +71,7 @@ const actions = {
         })
     },
     createRecurringHist: async (context, task) => {
-        await api.post('/recurring-tasks-history').then((res) => {
+        await api.post('/recurring-tasks-history', task).then((res) => {
             task.id = res.data.id
             context.commit('addHist', task)
         }).catch((e) => {
@@ -100,6 +105,13 @@ const actions = {
     deleteRecurring: async (context, task) => {
         await api.delete('/recurring-tasks/' + task.id).then(() => {
             context.commit('delete', task.id)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    deleteRecurringHist: async (context, task) => {
+        await api.delete('recurring-task-history/'  + task.id).then(() => {
+            context.commit('deleteHist', task)
         }).catch((e) => {
             throw e
         })

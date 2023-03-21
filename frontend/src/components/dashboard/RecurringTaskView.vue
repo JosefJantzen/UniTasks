@@ -17,7 +17,10 @@
     </div>
     <br>
     <div>
-        <h1 style="text-align: center; margin-bottom: 0.25rem;">History</h1>
+        <div style="display: flex; margin-bottom: 0.25rem;">
+            <h1 style="text-align: center; margin: auto 0;">History</h1>
+            <va-button icon="mdi-add" preset="secondary" size="small" style="margin: auto 0 auto auto;" @click="showEdit()"/>
+        </div>
         <va-data-table 
             :items="this.getHistory()" 
             :columns="this.histCols"
@@ -54,7 +57,14 @@
         size="medium"
         blur
     >
-        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+        <TaskView :modal="true" :task="this.modalRec" @click="close()"/>
+    </va-modal>
+    <va-modal
+        v-model="showModalTaskEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.createEmptyTaskHist()" :edit="false" @click="closeEdit()"/>
     </va-modal>
 </template>
 
@@ -63,11 +73,13 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 import TaskView from './TaskView.vue'
+import TaskEdit from '../TaskEdit.vue'
 
 export default {
     name: "RecurringTaskView",
     components: {
-        TaskView
+        TaskView,
+        TaskEdit
     },
     methods: {
         ...mapActions('tasks', ['done']),
@@ -122,15 +134,29 @@ export default {
             return "mdi-close"
         },
         rowClick(event) {
-            this.modalTask = event.item
+            this.modalRec= event.item
             this.showModal = true
         },
-        show (task) {
-            this.modalTask = task
-        },
         close () {
-            this.showModal = false
-        }
+            this.modalRec = false
+        },
+        showEdit () {
+            this.showModalTaskEdit = true
+        },
+        closeEdit() {
+            this.showModalTaskEdit = false
+        },
+		createEmptyTaskHist () {
+			return {
+				name: this.task.name,
+				desc: "",
+				due: new Date().toISOString(),
+				done: false,
+				doneAt: null,
+                recurring: true,
+                recurringTaskId: this.task.id
+			}
+		}
     },
     data () {
         return {
@@ -141,7 +167,8 @@ export default {
                 {key: "actions"}
             ],
             showModal: false,
-            modalTask: null,
+            showModalTaskEdit: false,
+            modalTask: null
         }
     },
     props: {

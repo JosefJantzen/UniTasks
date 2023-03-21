@@ -101,18 +101,11 @@ export default {
             this.showModal = false
         },
         showEdit (task) {
-            if (task.recurring) {
-                this.showModalRecurringTaskEdit = true
-            }
-            else {
-                this.showModalTaskEdit = true
-                this.modalTask = task
-            }
-            
+            this.showModalTaskEdit = true
+            this.modalTask = task
         },
         closeEdit() {
             this.showModalTaskEdit = false
-            this.showModalRecurringTaskEdit = false
         },
         delete (task) {
             if (task.recurring) {
@@ -133,7 +126,6 @@ export default {
             modalTask: null,
             dropDown: [],
             showModalTaskEdit: false,
-            showModalRecurringTaskEdit: false,
         }
     },
     props: {

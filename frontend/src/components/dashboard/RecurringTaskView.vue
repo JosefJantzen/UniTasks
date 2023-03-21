@@ -47,7 +47,7 @@
             </template>
             <template #cell(actions)="{ rowIndex }">
                 <va-button preset="secondary" round icon="mdi-edit" @click.stop="rowIndex"/>
-                <va-button preset="secondary" round icon="mdi-delete" @click.stop="rowIndex"/>
+                <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.delete(rowIndex)"/>
             </template>
         </va-data-table>
     </div>
@@ -84,6 +84,7 @@ export default {
     methods: {
         ...mapActions('tasks', ['done']),
         ...mapActions('recurringTasks', ['doneHist']),
+        ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getTimeString () {
             return "From " + help.formatDate(this.task.start) + " to " + help.formatDate(this.task.ending)
         },
@@ -145,6 +146,9 @@ export default {
         },
         closeEdit() {
             this.showModalTaskEdit = false
+        },
+        delete (i) {
+            this.deleteRecurringHist(this.getHistory()[i])
         },
 		createEmptyTaskHist () {
 			return {

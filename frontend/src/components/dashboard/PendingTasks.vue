@@ -71,6 +71,7 @@ export default {
         ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['listRecurring']),
         ...mapActions('recurringTasks', ['doneHist']),
+        ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
 
@@ -109,7 +110,7 @@ export default {
         },
         delete (task) {
             if (task.recurring) {
-                return
+                this.deleteRecurringHist(task)
             }
             else {
                 this.deleteTask(task)

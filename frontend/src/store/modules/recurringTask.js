@@ -111,7 +111,7 @@ const actions = {
         })
     },
     deleteRecurringHist: async (context, task) => {
-        await api.delete('recurring-task-history/'  + task.id).then(() => {
+        await api.delete('/recurring-tasks-history/'  + task.id).then(() => {
             context.commit('deleteHist', task)
         }).catch((e) => {
             throw e

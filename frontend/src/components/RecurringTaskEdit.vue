@@ -1,5 +1,5 @@
 <template>
-    <div :style="this.datePicker || this.timePicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
+    <div :style="this.startPicker || this.endPicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
         <div class="" style="display: flex;">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ getHeading() }}</h1>
@@ -20,19 +20,25 @@
                 :disabled="this.task.recurring"
             /><br>
             <va-date-input
-                v-model="due"
-                v-model:is-open="datePicker"
-                label="Due date"
+                v-model="start"
+                v-model:is-open="startPicker"
+                label="Start date"
                 first-weekday="Monday"
                 style="margin-bottom: 1em;"
-                @click.stop="datePicker = !datePicker"
+                @click.stop="startPicker = !startPicker"
             /><br>
-            <va-time-input
-                v-model="due"
-                v-model:is-open="timePicker"
-                label="Due time"
+            <va-date-input
+                v-model="ending"
+                v-model:is-open="endPicker"
+                label="End date"
                 style="margin-bottom: 1em;"
-                @click.stop="timePicker = !timePicker"
+                @click.stop="endPicker = !endPicker"
+            /><br>
+            <va-input
+                v-model="interval"
+                label="Interval in days"
+                type="number"
+                style="margin-bottom: 1em;"
             /><br>
             <va-input
                 v-model="desc"
@@ -54,17 +60,16 @@ import { mapActions } from 'vuex'
 import help from '../help/help'
 
 export default {
-    name: "TaskEdit",
+    name: "RecurringTaskEdit",
     methods: {
-        ...mapActions('tasks', ['createTask']),
-        ...mapActions('tasks', ['updateTask']),
-        ...mapActions('recurringTasks', ['updateRecurringHist']),
+        ...mapActions('recurringTasks', ['createRecurring']),
         ...mapActions('recurringTasks', ['createRecurringHist']),
+        ...mapActions('recurringTasks', ['updateRecurring']),
         getHeading () {
             if (this.edit) {
-                return "Edit Task"
+                return "Edit Recurring Task"
             }
-            return "New Task"
+            return "New Recurring Task"
         },
         getSubmitButton () {
             if (this.edit) {
@@ -75,31 +80,40 @@ export default {
         async submit () {
             let task = this.task
             task.name = this.name
-            task.due = help.formatJsDate(this.due)
+            task.start = help.formatJsDate(this.start)
+            task.ending = help.formatJsDate(this.ending)
+            task.interval = this.interval
             task.desc = this.desc
             if (this.edit) {
-                if (task.recurring) {
-                    this.updateRecurringHist(task)
-                } else {
-                    this.updateTask(task)
-                }
+                this.updateRecurring(task)
                 
             } else {
-                if (task.recurring) {
-                    this.createRecurringHist(task)
-                } else {
-                    this.createTask(task)                    
-                }
+                await this.createRecurring(task).then((recId) => {
+                    console.log(recId)
+                    this.start.setDate(this.start.getDate() + this.interval) 
+                    while (this.start < this.ending) {
+                        this.createRecurringHist({
+                            desc: "",
+                            due: help.formatJsDate(this.start),
+                            done: false,
+                            recurringTaskId: recId
+                        })
+                        this.start.setDate(this.start.getDate() + this.interval)  
+                    }
+                })
+                
             }
         }
     },
     data () {
         return {
             name: this.task.name,
-            due: new Date(this.task.due),
+            start: new Date(this.task.start),
+            ending: new Date(this.task.ending),
             desc: this.task.desc,
-            datePicker: false,
-            timePicker: false
+            interval: this.task.interval,
+            startPicker: false,
+            endPicker: false
         }
     },
     props: {

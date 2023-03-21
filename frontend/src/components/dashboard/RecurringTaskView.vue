@@ -99,7 +99,11 @@ export default {
             return "Done at " + help.formatTimestamp(this.task.doneAt)
         },
         getNextDueString () {
-            return help.formatTimestamp(this.getNextHist().due)
+            let h = this.getNextHist()
+            if (h == null) {
+                return "No entries"
+            }
+            return help.formatTimestamp(h.due)
         },
         getHistory () {
             let task = this.task

@@ -64,9 +64,10 @@ const actions = {
         })
     },
     createRecurring: async (context, task) => {
-        await api.post('/recurring-tasks', task).then((res) => {
+        return await api.post('/recurring-tasks', task).then((res) => {
             task.id = res.data.id
             context.commit('add', task)
+            return res.data.id
         }).catch((e) => {
             throw e
         })

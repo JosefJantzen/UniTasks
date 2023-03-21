@@ -13,7 +13,7 @@
 				<va-button size="large" @click="showNewTask()">New Task</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
-				<va-button size="large" @click="$router.replace('newRecurringTask')">New Recurring Task</va-button>
+				<va-button size="large" @click="showNewRecurringTask()">New Recurring Task</va-button>
 			</va-navbar-item>
 		</template>
 		<template #right>
@@ -29,17 +29,26 @@
     >
         <TaskEdit @click="closeNewTask()" :task="createEmptyTask()" :edit="false"/>
     </va-modal>
+	<va-modal
+        v-model="showModalNewRecurringTask"
+        hide-default-actions
+        size="large"
+    >
+        <RecurringTaskEdit @click="closeNewRecurringTask()" :task="createEmptyRecurringTask()" :edit="false"/>
+    </va-modal>
 </template>
 
 <script>
 import AccountMenu from "./components/navbar/AccountMenu.vue";
 import TaskEdit from "./components/TaskEdit.vue";
+import RecurringTaskEdit from "./components/RecurringTaskEdit.vue";
 
 export default {
 	name: 'App',
 	components: {
 		AccountMenu,
-		TaskEdit
+		TaskEdit,
+		RecurringTaskEdit
 	},
 	methods: {
 		github () {
@@ -51,6 +60,12 @@ export default {
         closeNewTask() {
             this.showModalNewTask = false
         },
+		showNewRecurringTask () {
+            this.showModalNewRecurringTask = true
+        },
+        closeNewRecurringTask() {
+            this.showModalNewRecurringTask = false
+        },
 		createEmptyTask () {
 			return {
 				name: "",
@@ -59,11 +74,24 @@ export default {
 				done: false,
 				doneAt: null
 			}
+		},
+		createEmptyRecurringTask () {
+			let d = new Date()
+			d.setDate(d.getDate() + 1)
+			return {
+				name: "",
+				desc: "",
+				start: new Date().toISOString(),
+				ending: d.toISOString(),
+				interval: 7,
+				history: []
+			}
 		}
 	},
 	data () {
 		return {
-			showModalNewTask: false
+			showModalNewTask: false,
+			showModalNewRecurringTask: false
 		}
 	}
 }

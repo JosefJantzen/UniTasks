@@ -5,7 +5,6 @@ import Login from '../components/Login.vue'
 import SignUp from '../components/SignUp.vue'
 import TaskDashboard from '../components/TaskDashboard.vue'
 import Settings from '../components/Settings.vue'
-import NewTask from '../components/NewTask.vue'
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -34,7 +33,6 @@ const router = createRouter({
 
         { path: '/', component: TaskDashboard, beforeEnter: requireAuth},
         { path: '/settings', component: Settings, beforeEnter: requireAuth},
-        { path: '/newTask', component: NewTask, beforeEnter: requireAuth}
     ],
 })
 

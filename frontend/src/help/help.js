@@ -20,7 +20,7 @@ function formatTimestamp(v) {
 }
 
 function formatDate(v) {
-    return moment.utc(v).format('DD.MM.YYYY')
+    return moment(v).format('DD.MM.YYYY')
 }
 
 function formatJsDate(d) {

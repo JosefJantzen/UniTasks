@@ -17,7 +17,6 @@
                 :rules="[(v) => v != '']"
                 style="margin-bottom: 1em;"
                 @click.stop=""
-                :disabled="this.task.recurring"
             /><br>
             <va-date-input
                 v-model="start"

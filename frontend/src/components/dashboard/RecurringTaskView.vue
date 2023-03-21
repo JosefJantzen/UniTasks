@@ -2,7 +2,7 @@
     <div class="" style="display: flex;">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ task.name }}</h1>
-            <va-button icon="mdi-edit" size="small" round preset="secondary" style="margin-left: auto;"/>
+            <va-button icon="mdi-edit" size="small" round preset="secondary" style="margin-left: auto;" @click="showEdit()"/>
             <va-button icon="mdi-delete" size="small" round preset="secondary" style="margin-left: 0.5rem;" />
     </div>
     <br>
@@ -46,7 +46,7 @@
                 <va-icon :name="value"/>
             </template>
             <template #cell(actions)="{ rowIndex }">
-                <va-button preset="secondary" round icon="mdi-edit" @click.stop="this.showEdit(rowIndex)"/>
+                <va-button preset="secondary" round icon="mdi-edit" @click.stop="this.showEditHist(rowIndex)"/>
                 <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.delete(rowIndex)"/>
             </template>
         </va-data-table>
@@ -71,9 +71,17 @@
         hide-default-actions
         size="medium"
     >
-        <TaskEdit :modal="true" :task="this.modalHist" :edit="true" @click="closeEdit()"/>
+        <TaskEdit :modal="true" :task="this.modalHist" :edit="true" @click="closeEditHist()"/>
+    </va-modal>
+    <va-modal
+        v-model="showModalEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <RecurringTaskEdit :modal="true" :edit="true" :task="this.modalTaskEdit" @click="closeEdit()"/>
     </va-modal>
 </template>
+
 
 <script>
 import { mapActions } from 'vuex'
@@ -81,12 +89,14 @@ import help from '../../help/help'
 
 import TaskView from './TaskView.vue'
 import TaskEdit from '../TaskEdit.vue'
+import RecurringTaskEdit from '../RecurringTaskEdit.vue'
 
 export default {
     name: "RecurringTaskView",
     components: {
         TaskView,
-        TaskEdit
+        TaskEdit,
+        RecurringTaskEdit
     },
     methods: {
         ...mapActions('tasks', ['done']),
@@ -158,12 +168,19 @@ export default {
         closeNew () {
             this.showModalTaskNew = false
         },
-        showEdit (i) {
+        showEditHist (i) {
             this.modalHist = this.getHistory()[i]
             this.showModalTaskEdit = true
         },
-        closeEdit () {
+        closeEditHist () {
             this.showModalTaskEdit = false
+        },
+        showEdit () {
+            this.modalTaskEdit = this.task
+            this.showModalEdit = true
+        },
+        closeEdit () {
+            this.showModalEdit = false
         },
         delete (i) {
             this.deleteRecurringHist(this.getHistory()[i])
@@ -191,8 +208,10 @@ export default {
             showModal: false,
             showModalTaskNew: false,
             showModalTaskEdit: false,
+            showModalEdit: false,
             modalTask: null,
-            modalHist: null
+            modalHist: null,
+            modalTaskEdit: null
         }
     },
     props: {

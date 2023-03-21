@@ -22,7 +22,7 @@
                 >
                     <va-button class="drop-btn" preset="secondary" icon="mdi-visibility"  @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="this.filter(task)">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-cancel" v-if="this.filter(task)" @click="end(task)">&nbsp;End it</va-button>
                     <br>
@@ -38,6 +38,13 @@
     >
         <RecurringTaskView :modal="true" :task="this.modalTask" @click="close()"/>
     </va-modal>
+    <va-modal
+        v-model="showModalEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <RecurringTaskEdit :modal="true" :edit="true" :task="this.modalTaskEdit" @click="closeEdit()"/>
+    </va-modal>
 </template>
 
 <script>
@@ -46,11 +53,13 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 import RecurringTaskView from './RecurringTaskView.vue'
+import RecurringTaskEdit from '../RecurringTaskEdit.vue'
 
 export default {
     name: 'RecurringTasks',
     components: {
-        RecurringTaskView
+        RecurringTaskView,
+        RecurringTaskEdit
     },
     methods: {
         ...mapActions('recurringTasks', ['updateRecurring']),
@@ -65,17 +74,26 @@ export default {
             return moment.utc(task.ending).isAfter(moment.utc());
         },
         show (task) {
-            this.showModal = true
             this.modalTask = task
+            this.showModal = true
         },
         close () {
             this.showModal = false
+        },
+        showEdit (task) {
+            this.modalTaskEdit = task
+            this.showModalEdit = true
+        },
+        closeEdit () {
+            this.showModalEdit = false
         }
     },
     data () {
         return {
             showModal: false,
+            showModalEdit: false,
             modalTask: null,
+            modalTaskEdit: null,
             dropDown: []
         }
     },

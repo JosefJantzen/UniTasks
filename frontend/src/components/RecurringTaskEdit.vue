@@ -88,8 +88,7 @@ export default {
                 
             } else {
                 await this.createRecurring(task).then((recId) => {
-                    console.log(recId)
-                    this.start.setDate(this.start.getDate() + this.interval) 
+                    this.start.setDate(this.start.getDate() + parseInt(this.interval)) 
                     while (this.start < this.ending) {
                         this.createRecurringHist({
                             desc: "",
@@ -97,7 +96,7 @@ export default {
                             done: false,
                             recurringTaskId: recId
                         })
-                        this.start.setDate(this.start.getDate() + this.interval)  
+                        this.start.setDate(this.start.getDate() + parseInt(this.interval))  
                     }
                 })
                 

@@ -1,6 +1,6 @@
 <template>
     <div :style="this.startPicker || this.endPicker ? 'margin: 0 1em 5em' : 'margin: 0 1em 0'">
-        <div class="" style="display: flex;">
+        <div class="" style="display: flex;" @click.stop="">
             <va-button icon="mdi-close" size="small" round preset="secondary" @click="this.$emit('click')"/>
             <h1 style="margin: auto 1rem; font-size: 25px;">{{ getHeading() }}</h1>
         </div>

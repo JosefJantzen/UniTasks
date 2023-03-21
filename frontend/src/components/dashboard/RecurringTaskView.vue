@@ -19,7 +19,7 @@
     <div>
         <div style="display: flex; margin-bottom: 0.25rem;">
             <h1 style="text-align: center; margin: auto 0;">History</h1>
-            <va-button icon="mdi-add" preset="secondary" size="small" style="margin: auto 0 auto auto;" @click="showEdit()"/>
+            <va-button icon="mdi-add" preset="secondary" size="small" style="margin: auto 0 auto auto;" @click="showNew()"/>
         </div>
         <va-data-table 
             :items="this.getHistory()" 
@@ -46,7 +46,7 @@
                 <va-icon :name="value"/>
             </template>
             <template #cell(actions)="{ rowIndex }">
-                <va-button preset="secondary" round icon="mdi-edit" @click.stop="rowIndex"/>
+                <va-button preset="secondary" round icon="mdi-edit" @click.stop="this.showEdit(rowIndex)"/>
                 <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.delete(rowIndex)"/>
             </template>
         </va-data-table>
@@ -60,11 +60,18 @@
         <TaskView :modal="true" :task="this.modalRec" @click="close()"/>
     </va-modal>
     <va-modal
+        v-model="showModalTaskNew"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.createEmptyTaskHist()" :edit="false" @click="closeNew()"/>
+    </va-modal>
+    <va-modal
         v-model="showModalTaskEdit"
         hide-default-actions
         size="medium"
     >
-        <TaskEdit :modal="true" :task="this.createEmptyTaskHist()" :edit="false" @click="closeEdit()"/>
+        <TaskEdit :modal="true" :task="this.modalHist" :edit="true" @click="closeEdit()"/>
     </va-modal>
 </template>
 
@@ -141,10 +148,17 @@ export default {
         close () {
             this.modalRec = false
         },
-        showEdit () {
+        showNew () {
+            this.showModalTaskNew = true
+        },
+        closeNew () {
+            this.showModalTaskNew = false
+        },
+        showEdit (i) {
+            this.modalHist = this.getHistory()[i]
             this.showModalTaskEdit = true
         },
-        closeEdit() {
+        closeEdit () {
             this.showModalTaskEdit = false
         },
         delete (i) {
@@ -171,8 +185,10 @@ export default {
                 {key: "actions"}
             ],
             showModal: false,
+            showModalTaskNew: false,
             showModalTaskEdit: false,
-            modalTask: null
+            modalTask: null,
+            modalHist: null
         }
     },
     props: {

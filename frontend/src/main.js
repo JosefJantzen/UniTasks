@@ -14,7 +14,7 @@ createApp(App)
 
 setInterval(() => {
 	if (getCookie("token") == "") {
-		//store.clear()
+		store.clear()
 	}
 }, 500);
 

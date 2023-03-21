@@ -1,5 +1,5 @@
 <template #app>
-	<va-navbar color="primary" class="navbar">
+	<va-navbar color="primary" class="navbar" >
 		<template #left v-if="this.showLogo">
 			<va-navbar-item class="nav-logo">
 				<va-image src="logo.png" :max-width=40 style="cursor: pointer;" @click="$router.push('/')"/>
@@ -120,6 +120,8 @@ export default {
 }
 
 .navbar {
+	position: fixed;
+	z-index: 205;
 	margin-bottom: 1em;
 	box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }

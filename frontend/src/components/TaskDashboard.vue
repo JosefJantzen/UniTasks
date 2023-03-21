@@ -1,25 +1,29 @@
 <template>
-    <va-tabs v-model="currentTab" center style="position: relative;">
-        <template #tabs>
-            <va-tab
-                v-for="tab in ['Pending Tasks', 'One time tasks', 'Recurring tasks']"
-                :key="tab"
-                class="tab"
-            >
-                {{ tab }}
-            </va-tab>
-        </template>
-        <va-switch
-            v-model="showDone"
-            left-label
-            off-color="info"
-            color="secondary"
-            true-inner-label="Show done"
-            false-inner-label="Hide done"
-            style="position: absolute; top: 0; right: 5%; float: left;"
-        />
-    </va-tabs>
-    <div class="view">
+    <div style="height: 145px; width: 100%; position: fixed; z-index: 100; background-color: #def0f0;"></div>
+    <div style="position: relative;  top: 100px; width: 100; overflow: hidden;  z-index: 200;">
+        <va-tabs v-model="currentTab" center style="position: fixed; width: 100%;">
+            <template #tabs>
+                <va-tab
+                    v-for="tab in ['Pending Tasks', 'One time tasks', 'Recurring tasks']"
+                    :key="tab"
+                    class="tab"
+                >
+                    {{ tab }}
+                </va-tab>
+            </template>
+            <va-switch
+                v-model="showDone"
+                left-label
+                off-color="info"
+                color="secondary"
+                true-inner-label="Show done"
+                false-inner-label="Hide done"
+                style="position: fixed; top: 100px; right: 5%; float: left;"
+            />
+        </va-tabs>
+    </div>
+    
+    <div class="view" style="margin-top: 105px;">
         <PendingTasks v-if="currentTab == 0" :showDone="this.showDone"></PendingTasks>
         <OneTimeTasks v-else-if="currentTab == 1" :showDone="this.showDone"></OneTimeTasks> 
         <RecurringTasks v-else-if="currentTab == 2" :showDone="this.showDone"></RecurringTasks>

@@ -1,5 +1,5 @@
 <template>
-    <va-image class="logo" src="logo.png" :max-width=80 />
+    <va-image class="logo" src="logo.png" :max-width=80 style="margin-top: 110px"/>
     <h1 class="heading">Sign in</h1>
     <va-form 
         class="login-form"

@@ -47,6 +47,7 @@ export default {
 .drop {
     padding-top: 1em;
     padding-bottom: 1em;
+    z-index: 201;
 }
 
 .drop-btn {

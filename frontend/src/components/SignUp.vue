@@ -86,3 +86,24 @@ function toast(msg) {
 }
 
 </script>
+
+
+<style>
+.heading {
+    font-size:xx-large;
+    margin-bottom: 1rem;
+}
+
+.sign-up-form {
+    margin-top: 2em;
+}
+
+.logo {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inputs{
+    margin-bottom: 1em;
+}
+</style>

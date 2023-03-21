@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import help from './help/help'
+
 import AccountMenu from "./components/navbar/AccountMenu.vue";
 import TaskEdit from "./components/TaskEdit.vue";
 import RecurringTaskEdit from "./components/RecurringTaskEdit.vue";
@@ -88,6 +90,10 @@ export default {
 			}
 		},
 		onResize() {
+			if (help.isMobile()) {
+				this.showLogo = false
+				return
+			}
 			this.width = window.innerWidth
 			this.showLogo = this.width > 760
 		}
@@ -97,7 +103,7 @@ export default {
 			showModalNewTask: false,
 			showModalNewRecurringTask: false,
 			width: window.innerWidth,
-			showLogo: true
+			showLogo: !help.isMobile()
 		}
 	},
 	mounted() {

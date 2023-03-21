@@ -47,6 +47,7 @@ export default {
         ...mapActions('tasks', ['done']),
         ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['doneHist']),
+        ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getDueString () {
             return "Due to " + help.formatTimestamp(this.task.due)
         },
@@ -64,14 +65,8 @@ export default {
             this.done(task)
         },
         showEdit (task) {
-            if (task.recurring) {
-                this.showModalRecurringTaskEdit = true
-            }
-            else {
-                this.showModalTaskEdit = true
-                this.modalTask = task
-            }
-            
+            this.showModalTaskEdit = true
+            this.modalTask = task            
         },
         closeEdit() {
             this.showModalTaskEdit = false
@@ -80,7 +75,7 @@ export default {
         delete (task) {
             this.$emit('click')
             if (task.recurring) {
-                return
+                this.deleteRecurringHist(task)
             }
             else {
                 this.deleteTask(task)
@@ -90,7 +85,6 @@ export default {
     data () {
         return {
             showModalTaskEdit: false,
-            showModalRecurringTaskEdit: false,
             modalTask: null
         }
     },

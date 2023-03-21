@@ -27,12 +27,16 @@ const store = createStore({
                         recTask.history[i].countMax = recTask.history.length
                         recTask.history[i].name = recTask.name
                         recTask.history[i].recurring = true
-                        res.push(recTask.history[i])
+                }
+            } 
+            for (const recTask of recTasks) {
+                for (const i in recTask.history) {
+                    res.push(recTask.history[i])
                     if (!recTask.history[i].done) {
                         break
                     }
                 }
-            }      
+            } 
             return [...tasks, ...res].sort((a, b) => {
                 if (a.done && !b.done) {
                     return 1

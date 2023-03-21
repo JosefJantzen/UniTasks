@@ -1,6 +1,6 @@
 <template #app>
 	<va-navbar color="primary" class="navbar">
-		<template #left>
+		<template #left v-if="this.showLogo">
 			<va-navbar-item class="nav-logo">
 				<va-image src="logo.png" :max-width=40 style="cursor: pointer;" @click="$router.push('/')"/>
 			</va-navbar-item>
@@ -17,7 +17,7 @@
 			</va-navbar-item>
 		</template>
 		<template #right>
-			<va-button class="git" @click="github">GitHub</va-button>
+			<va-button class="git" @click="github"  v-if="this.showLogo">GitHub</va-button>
 			<AccountMenu></AccountMenu>
 		</template>
 	</va-navbar>
@@ -86,13 +86,27 @@ export default {
 				interval: 7,
 				history: []
 			}
+		},
+		onResize() {
+			this.width = window.innerWidth
+			this.showLogo = this.width > 760
 		}
 	},
 	data () {
 		return {
 			showModalNewTask: false,
-			showModalNewRecurringTask: false
+			showModalNewRecurringTask: false,
+			width: window.innerWidth,
+			showLogo: true
 		}
+	},
+	mounted() {
+		this.$nextTick(() => {
+			window.addEventListener('resize', this.onResize);
+		})
+	},
+	beforeUnmount() { 
+		window.removeEventListener('resize', this.onResize); 
 	}
 }
 </script>

@@ -4,7 +4,7 @@
         :key="index"
         :stripe="task.done ? true : false"
     >
-        <div class="listItem" @click="show(task)">
+        <div class="listItem" @click="showView(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
@@ -21,23 +21,30 @@
                     v-model="this.dropDown[index]"
                     @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="showView(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.deleteTask(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
     </va-card>
     <va-modal
-        v-model="showModal"
+        v-model="showModalView"
         hide-default-actions
         size="medium"
     >
-        <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
+        <TaskView :modal="true" :task="this.modalTask" @click="closeView()"/>
+    </va-modal>
+    <va-modal
+        v-model="showModalEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.modalTask" :edit="true" @click="closeEdit()"/>
     </va-modal>
 </template>
 
@@ -46,15 +53,18 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 import TaskView from './TaskView.vue'
+import TaskEdit from '../TaskEdit.vue'
 
 export default {
     name: 'OneTimeTasks',
     components: {
-        TaskView
+        TaskView,
+        TaskEdit
     },
     methods: {
         ...mapActions('tasks', ['getAll']),
         ...mapActions('tasks', ['done']),
+        ...mapActions('tasks', ['deleteTask']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
         },
@@ -68,17 +78,25 @@ export default {
             task.doneAt = help.now()
             this.done(task)
         },
-        show (task) {
-            this.showModal = true
+        showView (task) {
+            this.showModalView = true
             this.modalTask = task
         },
-        close () {
-            this.showModal = false
+        closeView () {
+            this.showModalView = false
+        },
+        showEdit (task) {
+            this.showModalEdit = true
+            this.modalTask = task
+        },
+        closeEdit() {
+            this.showModalEdit = false
         }
     },
     data () {
         return {
-            showModal: false,
+            showModalView: false,
+            showModalEdit: false,
             modalTask: null,
             dropDown: []
         }

@@ -21,11 +21,11 @@
                 >
                     <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
             <va-card-content style="display: flex;" v-if="!task.done">
@@ -43,6 +43,13 @@
     >
         <TaskView :modal="true" :task="this.modalTask" @click="close()"/>
     </va-modal>
+    <va-modal
+        v-model="showModalTaskEdit"
+        hide-default-actions
+        size="medium"
+    >
+        <TaskEdit :modal="true" :task="this.modalTask" :edit="true" @click="closeEdit()"/>
+    </va-modal>
 </template>
 
 <script>
@@ -50,17 +57,21 @@ import { mapActions } from 'vuex'
 import help from '../../help/help'
 
 import TaskView from './TaskView.vue'
+import TaskEdit from '../TaskEdit.vue'
 
 export default {
     name: 'PendingTasks',
     components: {
-        TaskView
+        TaskView,
+        TaskEdit
     },
     methods: {
-        ...mapActions('tasks', ['list']),
+        ...mapActions('tasks', ['listTask']),
         ...mapActions('tasks', ['done']),
+        ...mapActions('tasks', ['deleteTask']),
         ...mapActions('recurringTasks', ['listRecurring']),
         ...mapActions('recurringTasks', ['doneHist']),
+        ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getDue (task) {
             return help.getDueString(task.due.substring(0,10))
 
@@ -89,17 +100,33 @@ export default {
         },
         close () {
             this.showModal = false
+        },
+        showEdit (task) {
+            this.showModalTaskEdit = true
+            this.modalTask = task
+        },
+        closeEdit() {
+            this.showModalTaskEdit = false
+        },
+        delete (task) {
+            if (task.recurring) {
+                this.deleteRecurringHist(task)
+            }
+            else {
+                this.deleteTask(task)
+            }
         }
     },
     created () {
-        this.list()
+        this.listTask()
         this.listRecurring()
     },
     data () {
         return {
             showModal: false,
             modalTask: null,
-            dropDown: []
+            dropDown: [],
+            showModalTaskEdit: false,
         }
     },
     props: {

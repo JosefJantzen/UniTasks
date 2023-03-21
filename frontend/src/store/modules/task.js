@@ -31,17 +31,21 @@ const mutations = {
     clear: (state) => {
         state.tasks = []
     },
-    add(state, task) {
+    add: (state, task) => {
         state.tasks.push(task)
     },
-    done(state, task) {
+    update: (state, task) => {
         const i = state.tasks.findIndex(t => t.id == task.id)
         state.tasks[i] = task
+    },
+    delete: (state, id) => {
+        const i = state.tasks.findIndex(t => t.id == id)
+        state.tasks.splice(i, 1)
     }
 }
 
 const actions = {
-    list: async (context) => {
+    listTask: async (context) => {
         await api.get('/tasks').then((res) => {
             context.commit('clear')
             for (const task of res.data) {
@@ -57,7 +61,29 @@ const actions = {
             "done": task.done,
             "doneAt": task.doneAt
         }).then(() => {
-            context.commit('done', task)
+            context.commit('update', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    createTask: async (context, task) => {
+        await api.post('/tasks', task).then((res) => {
+            task.id = res.data.id
+            context.commit('add', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    updateTask: async (context, task) => {
+        await api.put('/tasks/' + task.id, task).then(() => {
+            context.commit('update', task)
+        }).catch((e) => {
+            throw e
+        })
+    },
+    deleteTask: async (context, task) => {
+        await api.delete('/tasks/' + task.id).then(() => {
+            context.commit('delete', task.id)
         }).catch((e) => {
             throw e
         })

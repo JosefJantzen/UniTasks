@@ -51,7 +51,7 @@ func genJWT(claims *Claims, w http.ResponseWriter) string {
 func HandleCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", config.FrontendUrl)
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 }

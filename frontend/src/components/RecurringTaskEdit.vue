@@ -91,6 +91,7 @@ export default {
                     this.start.setDate(this.start.getDate() + parseInt(this.interval)) 
                     while (this.start < this.ending) {
                         this.createRecurringHist({
+                            name: task.name,
                             desc: "",
                             due: help.formatJsDate(this.start),
                             done: false,

@@ -47,8 +47,8 @@
                 <va-icon :name="value"/>
             </template>
             <template #cell(actions)="{ rowIndex }">
-                <va-button preset="secondary" round icon="mdi-edit" @click.stop="this.showEditHist(rowIndex)"/>
-                <va-button preset="secondary" round icon="mdi-delete" @click.stop="this.deleteHist(rowIndex)"/>
+                <va-button style="z-index: 0;" preset="secondary" round icon="mdi-edit" @click.stop="this.showEditHist(rowIndex)"/>
+                <va-button style="z-index: 0;" preset="secondary" round icon="mdi-delete" @click.stop="this.deleteHist(rowIndex)"/>
             </template>
         </va-data-table>
     </div>

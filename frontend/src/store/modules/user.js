@@ -18,7 +18,7 @@ const mutations = {
         state.user = user
     },
     setProperty: (state, data) => {
-        state[data.property] = data.value
+        state.user[data.property] = data.value
     }
 }
 
@@ -42,6 +42,18 @@ const actions = {
     logout: () => {
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None; Domain=" + window.location.hostname + ";";
         location.reload()
+    },
+    changeMail: async (context, mail) => {
+        await api.put('/updateMail', {
+            eMail: mail
+        }).then(() => {
+            context.commit('setProperty', {
+                property: 'eMail',
+                value: mail
+            })
+        }).catch((e) => {
+            throw e
+        })
     }
 }
 

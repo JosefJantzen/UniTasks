@@ -24,6 +24,7 @@
 	<div :class="!this.isMobile ? 'spacer-mobile' : 'spacer'"></div>
 	<br v-if="!this.isMobile">
 	<router-view></router-view>
+	<div style="height: 60px;"></div>
 	<va-modal
         v-model="showModalNewTask"
         hide-default-actions

@@ -23,13 +23,14 @@ const mutations = {
 }
 
 const actions = {
-    signIn: async (context, credentials)  => {
+    async signIn (context, credentials)  {
         await api.post('/signIn', credentials).then(() => {
             delete credentials.pwd
             context.commit('set', credentials)
         }).catch((e) => {
             throw e
-        })          
+        })
+           
     },
     signUp: async (context, credentials) => {
         await api.post('/signUp', credentials).then(() => {
@@ -40,6 +41,7 @@ const actions = {
         }) 
     },
     logout: () => {
+        clearInterval(this.$store.getters['user/get'].intervalId)
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None; Domain=" + window.location.hostname + ";";
         location.reload()
     },
@@ -63,6 +65,10 @@ const actions = {
         }).catch((e) => {
             throw e
         })
+    },
+    refresh: async () => {
+        console.log("refresh")
+        await api.get('/refresh')
     }
 }
 

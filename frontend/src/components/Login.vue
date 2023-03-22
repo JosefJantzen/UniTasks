@@ -42,18 +42,24 @@ export default {
     name: 'Login',
     methods: {
         ...mapActions('user', ['signIn']),
+        ...mapActions('user', ['refresh']),
         async login() {
+            let intervalId = setInterval(() => this.refresh(), 270000)
             try {
                 await this.signIn({
-                    "eMail": this.$data.email,
-                    "pwd": this.$data.pwd,
+                    eMail: this.$data.email,
+                    pwd: this.$data.pwd,
+                    intervalId: intervalId
                 })
                 if (this.$route.query.redirect && this.$route.query.redirect.indexOf('/') === 0) {
                     this.$router.replace(this.$route.query.redirect)
                 } else {
                     this.$router.replace('/')
                 }
+                  
             } catch (e) {
+                console.log(e)
+                clearInterval(intervalId)
                 useToast().init({
                     title: "Login failed",
                     message: "Email or password wrong",

@@ -67,7 +67,6 @@ const actions = {
         })
     },
     refresh: async () => {
-        console.log("refresh")
         await api.get('/refresh')
     }
 }

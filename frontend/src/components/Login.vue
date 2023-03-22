@@ -44,7 +44,7 @@ export default {
         ...mapActions('user', ['signIn']),
         ...mapActions('user', ['refresh']),
         async login() {
-            let intervalId = setInterval(() => this.refresh(), 270000)
+            let intervalId = setInterval(() => this.refresh(), 20000)
             try {
                 await this.signIn({
                     eMail: this.$data.email,
@@ -58,7 +58,6 @@ export default {
                 }
                   
             } catch (e) {
-                console.log(e)
                 clearInterval(intervalId)
                 useToast().init({
                     title: "Login failed",

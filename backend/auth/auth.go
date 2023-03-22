@@ -209,58 +209,53 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Refresh(w http.ResponseWriter, r *http.Request) {
-	HandleCors(w)
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
+func Refresh(conf *config.Config) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		HandleCors(w)
+		c, err := r.Cookie("token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		tknStr := c.Value
+		claims := &Claims{}
+		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+			return config.JwtKeyBytes, nil
+		})
+		if err != nil {
+			if err == jwt.ErrSignatureInvalid {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if !tkn.Valid {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-	claims := &Claims{}
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return config.JwtKeyBytes, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
+
+		if time.Until(claims.ExpiresAt.Time) > 2*time.Minute+30*time.Second {
+			w.WriteHeader(http.StatusOK)
 			return
 		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+
+		expirationTime := time.Now().Add(5 * time.Minute)
+		claims.ExpiresAt = jwt.NewNumericDate(expirationTime)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, err := token.SignedString(config.JwtKeyBytes)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		http.SetCookie(w, createCookie(tokenString, expirationTime, conf))
 	}
 
-	if time.Until(claims.ExpiresAt.Time) > 2*time.Minute+30*time.Second {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	expirationTime := time.Now().Add(5 * time.Minute)
-	claims.ExpiresAt = jwt.NewNumericDate(expirationTime)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(config.JwtKeyBytes)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
-		Value:    tokenString,
-		Expires:  expirationTime,
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-		Domain:   "unitasks.josefjantzen.de",
-	})
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService) {

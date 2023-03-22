@@ -23,7 +23,7 @@ func InitServer(dbService *database.DBService, config *config.Config) {
 	myRouter.HandleFunc("/api/v1/signIn", func(w http.ResponseWriter, r *http.Request) { apiService.SignIn(config, w, r) }).Methods("POST", "OPTIONS")
 	myRouter.HandleFunc("/api/v1/signUp", func(w http.ResponseWriter, r *http.Request) { apiService.SignUp(config, w, r) }).Methods("POST", "OPTIONS")
 	myRouter.HandleFunc("/api/v1/logout", auth.Logout).Methods("GET")
-	myRouter.HandleFunc("/api/v1/refresh", auth.Refresh).Methods("GET")
+	myRouter.HandleFunc("/api/v1/refresh", auth.Refresh(config)).Methods("GET")
 	myRouter.Handle("/api/v1/deleteUser", auth.Auth(apiService.DeleteUser)).Methods("DELETE", "OPTIONS")
 	myRouter.Handle("/api/v1/updateMail", auth.Auth(apiService.UpdateMail)).Methods("PUT", "OPTIONS")
 	myRouter.Handle("/api/v1/updatePwd", auth.Auth(apiService.UpdatePwd)).Methods("PUT", "OPTIONS")

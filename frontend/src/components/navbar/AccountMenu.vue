@@ -5,7 +5,7 @@
             :placement="this.isMobile ? 'bottom' : 'bottom-end'"
             :offset="[10, 0]"
             trigger="hover"
-            hover-out-timeout="500"
+            :hover-out-timeout="500"
         >
             <template #anchor>
                 <va-button>

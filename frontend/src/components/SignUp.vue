@@ -92,18 +92,23 @@ function toast(msg) {
 .heading {
     font-size:xx-large;
     margin-bottom: 1rem;
+    position: relative;
+    z-index: 105;
 }
 
 .sign-up-form {
     margin-top: 2em;
+    z-index: 105;
 }
 
 .logo {
     margin-left: auto;
     margin-right: auto;
+    z-index: 105;
 }
 
 .inputs{
     margin-bottom: 1em;
+    z-index: 105;
 }
 </style>

@@ -1,26 +1,28 @@
 <template #app>
 	<va-navbar color="primary" class="navbar" >
-		<template #left v-if="this.showLogo">
-			<va-navbar-item class="nav-logo">
+		<template #left v-if="this.isMobile">
+			<va-navbar-item class="nav-logo" style="display: contents;">
 				<va-image src="logo.png" :max-width=40 style="cursor: pointer;" @click="$router.push('/')"/>
 			</va-navbar-item>
 		</template>
 		<template #center v-if="this.$store.getters['user/get'] != null">
 			<va-navbar-item>
-				<va-button size="large" @click="$router.replace('/')">Dashboard</va-button>
+				<va-button :size="this.isMobile ? 'large' : 'medium'" @click="$router.replace('/')">Dashboard</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
-				<va-button size="large" @click="showNewTask()">New Task</va-button>
+				<va-button :size="this.isMobile ? 'large' : 'medium'" @click="showNewTask()">New Task</va-button>
 			</va-navbar-item>
 			<va-navbar-item>
-				<va-button size="large" @click="showNewRecurringTask()">New Recurring Task</va-button>
+				<va-button :size="this.isMobile ? 'large' : 'medium'" @click="showNewRecurringTask()">New Recurring Task</va-button>
 			</va-navbar-item>
 		</template>
 		<template #right>
-			<va-button class="git" @click="github"  v-if="this.showLogo">GitHub</va-button>
+			<va-button class="git" @click="github" v-if="this.isMobile">GitHub</va-button>
 			<AccountMenu></AccountMenu>
 		</template>
 	</va-navbar>
+	<div :class="!this.isMobile ? 'spacer-mobile' : 'spacer'"></div>
+	<br v-if="!this.isMobile">
 	<router-view></router-view>
 	<va-modal
         v-model="showModalNewTask"
@@ -91,11 +93,11 @@ export default {
 		},
 		onResize() {
 			if (help.isMobile()) {
-				this.showLogo = false
+				this.isMobile = false
 				return
 			}
 			this.width = window.innerWidth
-			this.showLogo = this.width > 760
+			this.isMobile = this.width > 760
 		}
 	},
 	data () {
@@ -103,7 +105,7 @@ export default {
 			showModalNewTask: false,
 			showModalNewRecurringTask: false,
 			width: window.innerWidth,
-			showLogo: !help.isMobile()
+			isMobile: !help.isMobile()
 		}
 	},
 	mounted() {
@@ -130,9 +132,26 @@ export default {
 	z-index: 205;
 	margin-bottom: 1em;
 	box-shadow: 0 2px 8px rgba(0,0,0,.5);
+	font-size: 40px;
 }
 
 .git {
 	margin-right: 1rem;
+}
+
+.spacer {
+	height: 145px;
+	width: 100%;
+	position: fixed;
+	z-index: 100;
+	background-color: #def0f0;
+}
+
+.spacer-mobile {
+	height: 200px;
+	width: 100%;
+	position: fixed;
+	z-index: 100;
+	background-color: #def0f0;
 }
 </style>

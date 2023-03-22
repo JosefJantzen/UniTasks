@@ -2,19 +2,19 @@
     <va-navbar-item>
         <va-dropdown 
             v-if="initial() != null"
-            placement="bottom-end"
+            :placement="this.isMobile ? 'bottom' : 'bottom-end'"
             :offset="[10, 0]"
             trigger="hover"
         >
             <template #anchor>
                 <va-button>
-                    <va-avatar size="small" color="info" style="font-size: 100%;">{{ initial() }}</va-avatar>
+                    <va-avatar :size=" this.isMobile ? '25px' : 'small'" color="info" style="font-size: 100%;">{{ initial() }}</va-avatar>
                 </va-button> 
             </template>
-            <va-dropdown-content class="drop">
+            <va-dropdown-content :class="this.isMobile ? 'drop-mobile' : 'drop'">
                 <va-button class="drop-btn" preset="secondary" icon="mdi-settings"
-                    @click="$router.push('/settings')">Settings</va-button> 
-                <br>
+                    @click="$router.push('/settings')"
+                    >Settings</va-button> 
                 <br>
                 <va-button class="drop-btn" preset="secondary" icon="mdi-logout"
                     @click="logout">Logout</va-button>
@@ -27,6 +27,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import help from '../../help/help'
 
 export default {
     name: 'AccountMenu',
@@ -39,14 +40,25 @@ export default {
             }
             return null
         }
+    },
+    data () {
+        return {
+            isMobile: help.isMobile()
+        }
     }
 }
 </script>
 
 <style>
 .drop {
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    z-index: 201;
+}
+
+.drop-mobile {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     z-index: 201;
 }
 

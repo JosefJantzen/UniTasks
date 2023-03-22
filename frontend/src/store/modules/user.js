@@ -54,6 +54,15 @@ const actions = {
         }).catch((e) => {
             throw e
         })
+    },
+    changePwd: async (context, pwd) => {
+        await api.put('/updatePwd', {
+            pwd: pwd
+        }).then(() => {
+
+        }).catch((e) => {
+            throw e
+        })
     }
 }
 

@@ -26,7 +26,7 @@
                 label="Repeat new EMail"
                 type="email"
                 v-model="newEmail2"
-                :rules="[(newEmail1 == newEmail2)]"
+                :rules="[(newEmail1 == newEmail2)  || `Don't match`]"
                 /><br>
                 <va-button
                     type="submit"
@@ -41,27 +41,40 @@
         <va-card-content>
             <va-form
                 tag="form"
-                @submit="changeMail"
+                @submit="submitPwd"
             >
                 <va-input
                 class="inputs"
-                label="Old Password"
-                type="password"
-                v-model="oldPwd"
-                /><br>
-                <va-input
-                class="inputs"
                 label="New Password"
-                type="password"
                 v-model="newPwd1"
-                /><br>
+                :rules="[((v) => v.length >= 8 || `At least 8 characters`)]"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                >
+                    <template #appendInner>
+                        <va-icon
+                            :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                            size="small"
+                            color="--va-primary"
+                            @click="isPasswordVisible = !isPasswordVisible"
+                        />
+                    </template>
+                </va-input><br>
                 <va-input
                 class="inputs"
                 label="Repeat new Password"
-                type="password"
                 v-model="newPwd2"
-                :rules="[(newPwd1 == newPwd2)]"
-                /><br>
+                :rules="[((v) => v.length >= 8 || `At least 8 characters`), (newPwd1 == newPwd2) || `Don't match`]"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                >
+                    <template #appendInner>
+                        <va-icon
+                            :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                            size="small"
+                            color="--va-primary"
+                            @click="isPasswordVisible = !isPasswordVisible"
+                        />
+                    </template>
+                </va-input><br>
                 <va-button
                     type="submit"
                 >Change password</va-button>
@@ -78,7 +91,8 @@ export default {
     name: 'Settings',
     methods: {
         ...mapActions('user', ['changeMail']),
-        async submitMail() {
+        ...mapActions('user', ['changePwd']),
+        async submitMail () {
             if (this.oldEmail != this.$store.getters['user/get'].eMail) {
                 useToast().init({
                     title: "Email change failed",
@@ -110,6 +124,31 @@ export default {
                 duration: 3000
 
             })
+        },
+        async submitPwd () {
+            if (this.newPwd1.length < 8) {
+                return
+            }
+            if (this.newPwd1 != this.newPwd2) {
+                useToast().init({
+                    title: "Password change failed",
+                    message: "New passowrds are different",
+                    color: 'danger',
+                    position: 'bottom-right',
+                    duration: 3000
+
+                })
+                return
+            }
+            await this.changePwd(this.newPwd1)
+            useToast().init({
+                title: "Password changed",
+                message: "Your password was succesfully changed",
+                color: 'success',
+                position: 'bottom-right',
+                duration: 3000
+
+            })
         }
     },
     data () {
@@ -117,9 +156,9 @@ export default {
             oldEmail: "",
             newEmail1: "",
             newEmail2: "",
-            oldPwd: "",
             newPwd1: "",
-            newPwd2: ""
+            newPwd2: "",
+            isPasswordVisible: false,
         }
     }
 }

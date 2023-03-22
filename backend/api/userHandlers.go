@@ -66,10 +66,7 @@ func (s *ApiService) UpdatePwd(w http.ResponseWriter, r *http.Request, claims *a
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if pwd.Id != claims.Id {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	pwd.Id = claims.Id
 	auth.UpdatePwd(w, r, s.DB, pwd)
 }
 

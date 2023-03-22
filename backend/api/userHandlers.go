@@ -45,10 +45,8 @@ func (s *ApiService) UpdateMail(w http.ResponseWriter, r *http.Request, claims *
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if mail.Id != claims.Id {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	mail.Id = claims.Id
+
 	err = s.DB.UpdateMail(claims.Id, mail.Mail)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -68,10 +66,7 @@ func (s *ApiService) UpdatePwd(w http.ResponseWriter, r *http.Request, claims *a
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if pwd.Id != claims.Id {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	pwd.Id = claims.Id
 	auth.UpdatePwd(w, r, s.DB, pwd)
 }
 

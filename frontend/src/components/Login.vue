@@ -44,7 +44,7 @@ export default {
         ...mapActions('user', ['signIn']),
         ...mapActions('user', ['refresh']),
         async login() {
-            let intervalId = setInterval(() => this.refresh(), 10000)
+            let intervalId = setInterval(() => this.refresh(), 270000)
             try {
                 await this.signIn({
                     eMail: this.$data.email,

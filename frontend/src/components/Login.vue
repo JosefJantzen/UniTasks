@@ -44,7 +44,17 @@ export default {
         ...mapActions('user', ['signIn']),
         ...mapActions('user', ['refresh']),
         async login() {
-            let intervalId = setInterval(() => this.refresh(), 270000)
+            let intervalId = setInterval(async () =>{
+                try {
+                    await this.refresh()
+                }
+                catch (e) {
+                    if(e.response.status == 401) {
+                        this.$router.push('/login')
+                        clearInterval(intervalId)
+                    }
+                }
+            }, 270000)
             try {
                 await this.signIn({
                     eMail: this.$data.email,

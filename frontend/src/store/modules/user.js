@@ -40,8 +40,8 @@ const actions = {
             throw e
         }) 
     },
-    logout: () => {
-        clearInterval(this.$store.getters['user/get'].intervalId)
+    logout: (context) => {
+        clearInterval(context.state.intervalId)
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None; Domain=" + window.location.hostname + ";";
         location.reload()
     },
@@ -66,7 +66,7 @@ const actions = {
             throw e
         })
     },
-    refresh: async () => {
+    async refresh  ()  {
         await api.get('/refresh')
     }
 }

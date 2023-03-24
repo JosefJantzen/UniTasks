@@ -57,6 +57,7 @@ const actions = {
             context.commit('clear')
             for (const task of res.data) {
                 task.recurring = true
+                task.history.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
                 context.commit('add', task)
             }
         }).catch((e) => {

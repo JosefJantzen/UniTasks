@@ -18,6 +18,30 @@ setInterval(() => {
 	}
 }, 500);
 
+window.onload = async function () {
+	try {
+		await store.store.dispatch('user/refresh')
+		let intervalId = setInterval(async () =>{
+			try {
+				await store.store.dispatch('user/refresh')
+			}
+			catch (e) {
+				if(e.response.status == 401) {
+					router.push('/login')
+					clearInterval(intervalId)
+				}
+			}
+		}, 270000)
+		store.store.dispatch('user/interval', intervalId)
+	}
+	catch (e) {
+		if(e.response.status == 401) {
+			router.push('/login')
+		}
+		return
+	}
+}
+
 function getCookie(cname) {
 	let name = cname + "=";
 	let decodedCookie = decodeURIComponent(document.cookie);

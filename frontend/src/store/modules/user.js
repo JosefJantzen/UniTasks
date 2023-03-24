@@ -68,6 +68,12 @@ const actions = {
     },
     async refresh  ()  {
         await api.get('/refresh')
+    },
+    interval: (context, id) => {
+        context.commit('setProperty', {
+            property: 'intervalId',
+            value: id
+        })
     }
 }
 

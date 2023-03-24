@@ -27,7 +27,7 @@
                     <br v-if="task.done">
                     <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.deleteTask(task)">Delete</va-button>
+                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -89,8 +89,18 @@ export default {
             this.showModalEdit = true
             this.modalTask = task
         },
-        closeEdit() {
+        closeEdit () {
             this.showModalEdit = false
+        },
+        delete (task) {
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: () => this.deleteTask(task),
+            })
         }
     },
     data () {

@@ -109,12 +109,21 @@ export default {
             this.showModalTaskEdit = false
         },
         delete (task) {
-            if (task.recurring) {
-                this.deleteRecurringHist(task)
-            }
-            else {
-                this.deleteTask(task)
-            }
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: () => {
+                    if (task.recurring) {
+                        this.deleteRecurringHist(task)
+                    }
+                    else {
+                        this.deleteTask(task)
+                    }
+                },
+            })
         }
     },
     created () {

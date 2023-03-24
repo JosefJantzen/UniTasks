@@ -89,7 +89,14 @@ export default {
             this.showModalEdit = false
         },
         delete (task) {
-            this.deleteRecurring(task)
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: () => this.deleteRecurring(task),
+            })            
         }
     },
     data () {

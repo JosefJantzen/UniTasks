@@ -185,11 +185,27 @@ export default {
             this.showModalEdit = false
         },
         delete (task) {
-            this.$emit('click')
-            this.deleteRecurring(task)
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: () => {
+                    this.$emit('click')
+                    this.deleteRecurring(task)
+                },
+            })            
         },
         deleteHist (i) {
-            this.deleteRecurringHist(this.getHistory()[i])
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: () => this.deleteRecurringHist(this.getHistory()[i]),
+            })            
         },
 		createEmptyTaskHist () {
 			return {

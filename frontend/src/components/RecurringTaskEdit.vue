@@ -33,6 +33,13 @@
                 style="margin-bottom: 1em;"
                 @click.stop="endPicker = !endPicker"
             /><br>
+            <va-time-input
+                v-model="due"
+                v-model:is-open="duePicker"
+                label="Due time of single tasks"
+                style="margin-bottom: 1em;"
+                @click.stop="duePicker = !duePicker"
+            /><br>
             <va-input
                 v-model="interval"
                 label="Interval in days"
@@ -95,14 +102,21 @@ export default {
                         this.createRecurringHist({
                             name: task.name,
                             desc: "",
-                            due: help.formatJsDate(this.start),
+                            due: help.formatJsDate(new Date(
+                                this.start.getFullYear(), 
+                                this.start.getMonth(),
+                                this.start.getDay(),
+                                this.due.getHours(),
+                                this.due.getMinutes(),
+                                59,
+                                999
+                            )),
                             done: false,
                             recurringTaskId: recId
                         })
                         this.start.setDate(this.start.getDate() + parseInt(this.interval))  
                     }
-                })
-                
+                })    
             }
         }
     },
@@ -111,10 +125,12 @@ export default {
             name: this.task.name,
             start: new Date(this.task.start),
             ending: new Date(this.task.ending),
+            due: new Date(),
             desc: this.task.desc,
             interval: this.task.interval,
             startPicker: false,
-            endPicker: false
+            endPicker: false,
+            duePicker: false
         }
     },
     props: {

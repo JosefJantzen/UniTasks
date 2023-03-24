@@ -33,7 +33,7 @@ const mutations = {
     addHist: (state, hist) => {
         const i = state.recurringTasks.findIndex(t => t.id == hist.recurringTaskId)
         state.recurringTasks[i].history.push(hist)
-        state.recurringTasks[i].hist.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
+        state.recurringTasks[i].history.sort((a, b) => moment(String(a.due)) - moment(String(b.due)))
     },
     updateHist: (state, hist) => {
         const i = state.recurringTasks.findIndex(t => t.id == hist.recurringTaskId)

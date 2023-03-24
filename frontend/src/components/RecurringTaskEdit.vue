@@ -77,6 +77,8 @@ export default {
             return "Create"
         },
         async submit () {
+            this.start.setHours(0, 0, 0, 0)
+            this.ending.setHours(23, 59, 59, 999)
             let task = this.task
             task.name = this.name
             task.start = help.formatJsDate(this.start)
@@ -89,7 +91,7 @@ export default {
             } else {
                 await this.createRecurring(task).then((recId) => {
                     this.start.setDate(this.start.getDate() + parseInt(this.interval)) 
-                    while (this.start < this.ending) {
+                    while (this.start <= this.ending) {
                         this.createRecurringHist({
                             name: task.name,
                             desc: "",

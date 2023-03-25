@@ -127,14 +127,21 @@ func (s *DBService) DeleteUser(id uuid.UUID) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"DELETE FROM recurring_tasks WHERE parentUser=$1;",
+				"DELETE FROM recurring_tasks_history WHERE user_id=$1;",
 				id,
 			)
 			if err != nil {
 				return err
 			}
 			_, err = tx.Exec(
-				"DELETE FROM tasks WHERE parentUser=$1",
+				"DELETE FROM recurring_tasks WHERE user_id=$1;",
+				id,
+			)
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(
+				"DELETE FROM tasks WHERE user_id=$1",
 				id,
 			)
 			if err != nil {

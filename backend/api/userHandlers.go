@@ -82,5 +82,5 @@ func (s *ApiService) DeleteUser(w http.ResponseWriter, r *http.Request, claims *
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	auth.DeleteUser(w, r, creds, s.DB)
+	auth.DeleteUser(w, r, creds, s.DB, claims)
 }

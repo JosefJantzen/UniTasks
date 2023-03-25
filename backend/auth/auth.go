@@ -258,9 +258,14 @@ func Refresh(conf *config.Config) func(http.ResponseWriter, *http.Request) {
 
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService) {
+func DeleteUser(w http.ResponseWriter, r *http.Request, creds Credentials, s *database.DBService, claims *Claims) {
 	user, err := s.GetUserByMail(creds.EMail)
 	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	if user.Id != claims.Id {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

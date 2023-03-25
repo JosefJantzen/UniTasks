@@ -3,6 +3,7 @@
         v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
+        :color="late(task) ? 'warning' : 'white'"
     >
         <div class="listItem" @click="show(task)">
             <va-card-title>
@@ -124,6 +125,9 @@ export default {
                     }
                 },
             })
+        },
+        late (task) {
+            return help.late(task.due)
         }
     },
     created () {

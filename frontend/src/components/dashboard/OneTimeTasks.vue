@@ -3,6 +3,7 @@
         v-for="(task, index) in this.$store.getters['tasks/getAll'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
+        :color="late(task) ? 'warning' : 'white'"
     >
         <div class="listItem" @click="showView(task)">
             <va-card-title>
@@ -101,6 +102,9 @@ export default {
                 blur: true,
                 onOk: () => this.deleteTask(task),
             })
+        },
+        late (task) {
+            return help.late(task.due)
         }
     },
     data () {

@@ -73,7 +73,7 @@ export default {
         ...mapActions('recurringTasks', ['doneHist']),
         ...mapActions('recurringTasks', ['deleteRecurringHist']),
         getDue (task) {
-            return help.getDueString(task.due.substring(0,10))
+            return help.getDueString(task.due)
 
         },
         undone (task) {

@@ -66,7 +66,7 @@ export default {
         ...mapActions('tasks', ['done']),
         ...mapActions('tasks', ['deleteTask']),
         getDue (task) {
-            return help.getDueString(task.due.substring(0,10))
+            return help.getDueString(task.due)
         },
         undone (task) {
             task.done = false

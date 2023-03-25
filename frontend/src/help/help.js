@@ -9,10 +9,10 @@ function getDueString(v) {
     if (due.diff(moment.utc()) <= 0) {
         return "You are late"
     }
-    else if (due.diff(moment.utc(), 'days', true) < 1) {
+    else if (moment.utc().diff(due, 'days', true) <= 1) {
         return "Less than a day left"
     }
-    return "You have " + due.diff(moment.utc(), 'days') + " days"
+    return "You have " + moment.utc().diff(due, 'days') + " days"
 }
 
 function formatTimestamp(v) {

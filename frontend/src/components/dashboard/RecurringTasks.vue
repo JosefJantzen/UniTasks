@@ -65,7 +65,7 @@ export default {
         ...mapActions('recurringTasks', ['updateRecurring']),
         ...mapActions('recurringTasks', ['deleteRecurring']),
         getDue (task) {
-            return help.getDueString(task.ending.substring(0,10))
+            return help.getDueString(task.ending)
         },
         end (task) {
             task.ending = help.now()

@@ -28,7 +28,7 @@
                 @click.stop="datePicker = !datePicker"
             /><br>
             <va-time-input
-                v-model="due"
+                v-model="dueTime"
                 v-model:is-open="timePicker"
                 label="Due time"
                 style="margin-bottom: 1em;"
@@ -73,6 +73,12 @@ export default {
             return "Create"
         },
         async submit () {
+            this.due.setHours(
+                this.dueTime.getHours(),
+                this.dueTime.getMinutes(),
+                59,
+                999
+            )
             let task = this.task
             task.name = this.name
             task.due = help.formatJsDate(this.due)
@@ -97,6 +103,7 @@ export default {
         return {
             name: this.task.name,
             due: new Date(this.task.due),
+            dueTime: new Date(this.task.due),
             desc: this.task.desc,
             datePicker: false,
             timePicker: false

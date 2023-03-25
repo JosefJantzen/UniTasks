@@ -12,7 +12,11 @@ function getDueString(v) {
     else if (due.diff(moment.utc()) <= 86400000) {
         return "Less than a day left"
     }
-    return "You have " + due.diff(moment.utc(), 'days') + " days"
+    let days = due.diff(moment.utc(), 'days')
+    if (days == 1) {
+        return "You have one day"
+    }
+    return "You have " + days + " days"
 }
 
 function formatTimestamp(v) {

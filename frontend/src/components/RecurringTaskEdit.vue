@@ -105,7 +105,7 @@ export default {
                             desc: "",
                             due: help.formatJsDate(new Date(
                                 this.start.getFullYear(), 
-                                this.start.getMonth() + 1,
+                                this.start.getMonth(),
                                 this.start.getDate(),
                                 this.due.getHours(),
                                 this.due.getMinutes(),

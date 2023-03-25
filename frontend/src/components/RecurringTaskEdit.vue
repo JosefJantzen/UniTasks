@@ -32,6 +32,7 @@
                 label="End date"
                 style="margin-bottom: 1em;"
                 @click.stop="endPicker = !endPicker"
+                :rules="[(ending > start || `Pick an end after the start`)]"
             /><br>
             <va-time-input
                 v-model="due"
@@ -56,7 +57,7 @@
                 @click.stop=""
             >
             </va-input><br>
-            <va-button type="submit" @click="this.$emit('click')">{{ getSubmitButton() }}</va-button>
+            <va-button type="submit" @click="this.$emit('click')" :disabled="ending < start || name == ''" >{{ getSubmitButton() }}</va-button>
         </va-form>
     </div>
 </template>

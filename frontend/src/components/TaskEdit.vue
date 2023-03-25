@@ -44,7 +44,7 @@
                 @click.stop=""
             >
             </va-input><br>
-            <va-button type="submit" @click="this.$emit('click')">{{ getSubmitButton() }}</va-button>
+            <va-button type="submit" @click="this.$emit('click')" :disabled="name == ''">{{ getSubmitButton() }}</va-button>
         </va-form>
     </div>
 </template>

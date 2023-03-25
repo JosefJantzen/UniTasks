@@ -14,7 +14,7 @@ export default {
     put: async (path, data) => {
         return axios.put(baseURL + path, data)
     },
-    delete: async (path) => {
-        axios.delete(baseURL + path)
+    delete: async (path, payload) => {
+        axios.delete(baseURL + path, { data: payload})
     }
 }

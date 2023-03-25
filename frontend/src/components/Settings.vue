@@ -81,6 +81,40 @@
             </va-form>
         </va-card-content>
     </va-card>
+    <va-card class="card" style="margin-top: 20px;">
+        <va-card-title>
+            Delete user account
+        </va-card-title>
+        <va-card-content>
+            <va-form>
+                <va-input
+                    class="inputs"
+                    label="EMAIL"
+                    type="email"
+                    v-model="delMail"
+                /><br>
+                <va-input
+                    class="inputs"
+                    v-model="delPwd"
+                    label="PASSWORD"
+                    :type="delIsPasswordVisible ? 'text' : 'password'"
+                >
+                    <template #appendInner>
+                        <va-icon
+                            :name="delIsPasswordVisible ? 'visibility_off' : 'visibility'"
+                            size="small"
+                            color="--va-primary"
+                            @click="delIsPasswordVisible = !delIsPasswordVisible"
+                        />
+                    </template>
+                </va-input><br>
+                <va-button
+                    color="danger"
+                    @click="this.delete()"
+                >Delete User</va-button>
+            </va-form>
+        </va-card-content>
+    </va-card>
 </template>
 
 <script>
@@ -92,6 +126,7 @@ export default {
     methods: {
         ...mapActions('user', ['changeMail']),
         ...mapActions('user', ['changePwd']),
+        ...mapActions('user', ['deleteUser']),
         async submitMail () {
             if (this.oldEmail != this.$store.getters['user/get'].eMail) {
                 useToast().init({
@@ -149,6 +184,33 @@ export default {
                 duration: 3000
 
             })
+        },
+        async delete () {
+            this.$vaModal.init({
+                title: 'Warning',
+                message: 'Are you sure you want to delete this task?',
+                okText: 'Yes',
+                cancelText: 'No',
+                blur: true,
+                onOk: async () => {
+                    try {
+                        await this.deleteUser({
+                            eMail: this.delMail,
+                            pwd: this.delPwd
+                        })
+                    }
+                    catch (e) {
+                        useToast().init({
+                            title: "Delete failed",
+                            message: "Your credentials are wrong",
+                            color: 'danger',
+                            position: 'bottom-right',
+                            duration: 3000
+
+                        })
+                    }
+                },
+            })
         }
     },
     data () {
@@ -159,6 +221,9 @@ export default {
             newPwd1: "",
             newPwd2: "",
             isPasswordVisible: false,
+            delMail: "",
+            delPwd: "",
+            delIsPasswordVisible: false
         }
     }
 }

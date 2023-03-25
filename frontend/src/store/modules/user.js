@@ -74,6 +74,11 @@ const actions = {
             property: 'intervalId',
             value: id
         })
+    },
+    deleteUser: async (context, credentials) => {
+        await api.delete('/deleteUser', credentials).then(() => {
+            context.dispatch('logout')
+        })
     }
 }
 

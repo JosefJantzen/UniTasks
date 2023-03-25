@@ -88,7 +88,7 @@ export default {
                             this.deleteTask(task)
                         }
                 },
-            })            
+            })
         }
     },
     data () {

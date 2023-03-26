@@ -27,3 +27,5 @@ temp.sql
 temp/*
 certs/*
 priv-certs/*
+
+backend/main

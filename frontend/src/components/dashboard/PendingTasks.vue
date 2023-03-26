@@ -3,9 +3,9 @@
         v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
-        :color="late(task) ? 'warning' : 'white'"
+        :color="late(task) && !task.done ? 'warning' : 'white'"
     >
-        <div class="listItem" @click="show(task)">
+        <div :class="late(task) && !task.done ? 'listItemPending hoverDonePending' : 'listItemPending hoverPending'" @click="show(task)">
             <va-card-title>
                 <va-avatar v-if="task.recurring" size="40px" font-size="15px">{{ task.count }}/{{ task.countMax }}</va-avatar>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
@@ -20,13 +20,13 @@
                     v-model="this.dropDown[index]"
                     @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="dropBtnPending" preset="secondary" icon="mdi-visibility" @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="dropBtnPending" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
+                    <va-button class="dropBtnPending" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
+                    <va-button class="dropBtnPending" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
             <va-card-content style="display: flex;" v-if="!task.done">
@@ -151,31 +151,20 @@ export default {
 
 <style>
 
-.task-done {
-    background-color: #000000;
-}
-
-.listItem{
+.listItemPending{
   margin-top: 20px;
   cursor: pointer;
 }
 
-.listItem:hover {
+.hoverPending:hover {
     background-color: #d5e8e8;
 }
 
-.card-content {
-    padding: 1rem;
-    overflow: hidden;
+.hoverDonePending:hover {
+    background-color: #f8ff00;
 }
 
-.column {
-    display: contents;
-    margin-right: 1rem;
-    float: left;
-}
-
-.drop-btn {
+.dropBtnPending {
     margin-left: 1rem;
     margin-right: 1rem;
 }

@@ -4,7 +4,7 @@
         :key="index"
         :stripe="!this.filter(task)"
     >
-        <div class="listItem" @click="show(task)">
+        <div class="listItemRecurring" @click="show(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="this.filter(task)">
@@ -20,13 +20,13 @@
                     v-model="this.dropDown[index]"
                     @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility"  @click="show(task)">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="dropBtnRecurring" preset="secondary" icon="mdi-visibility"  @click="show(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="dropBtnRecurring" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="this.filter(task)">
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-cancel" v-if="this.filter(task)" @click="end(task)">&nbsp;End it</va-button>
+                    <va-button class="dropBtnRecurring" preset="secondary" icon="mdi-cancel" v-if="this.filter(task)" @click="end(task)">&nbsp;End it</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
+                    <va-button class="dropBtnRecurring" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -114,3 +114,21 @@ export default {
 }
 
 </script>
+
+<style>
+
+.listItemRecurring{
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.listItemRecurring:hover {
+    background-color: #d5e8e8;
+}
+
+.dropBtnRecurring {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+</style>

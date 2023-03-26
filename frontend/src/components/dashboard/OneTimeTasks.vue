@@ -3,9 +3,9 @@
         v-for="(task, index) in this.$store.getters['tasks/getAll'].filter(task => !task.done || showDone)"
         :key="index"
         :stripe="task.done ? true : false"
-        :color="late(task) ? 'warning' : 'white'"
+        :color="late(task) && !task.done ? 'warning' : 'white'"
     >
-        <div class="listItem" @click="showView(task)">
+        <div :class="late(task) && !task.done ? 'listItemOne hoverDoneOne' : 'listItemOne hoverOne'" @click="showView(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
@@ -22,13 +22,13 @@
                     v-model="this.dropDown[index]"
                     @click.stop="this.dropDown[index] = !this.dropDown[index]"
                 >
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-visibility" @click="showView(task)">&nbsp;&nbsp;Show</va-button>
+                    <va-button class="dropBtnOne" preset="secondary" icon="mdi-visibility" @click="showView(task)">&nbsp;&nbsp;Show</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
+                    <va-button class="dropBtnOne" preset="secondary" icon="mdi-edit" @click="showEdit(task)">&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;</va-button>
                     <br v-if="task.done">
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
+                    <va-button class="dropBtnOne" preset="secondary" icon="mdi-undo" v-if="task.done" @click="undone(task)">Mark<br>undone</va-button>
                     <br>
-                    <va-button class="drop-btn" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
+                    <va-button class="dropBtnOne" preset="secondary" icon="mdi-delete" @click="this.delete(task)">Delete</va-button>
                 </va-button-dropdown>
             </va-card-title>
         </div>
@@ -121,3 +121,25 @@ export default {
 }
 
 </script>
+
+<style>
+
+.listItemOne{
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.hoverOne:hover {
+    background-color: #d5e8e8;
+}
+
+.hoverDoneOne:hover {
+    background-color: #f8ff00;
+}
+
+.dropBtnOne {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+</style>

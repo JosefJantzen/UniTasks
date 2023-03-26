@@ -6,8 +6,6 @@ The project is still be developed. If I'm finished there will be a  more detaile
 1. Create a new directory for example uni-tasks
 2. Create a .env file and define the following attributes:
 ```env
-JWT_SECRET_KEY="SecretYouShouldHide"
-
 BACKEND_CONFIG="/home/<user>/uni-tasks/config.json"
 
 DB_DATABASE="unitasks"

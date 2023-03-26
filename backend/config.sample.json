@@ -9,5 +9,7 @@
         "testData": "DB-test-data.pgsql"
     },
     "port": "8080",
-    "jwtExpireMin": 5
+    "jwtKey": "SecretYouShouldHide",
+    "jwtExpireMin": 5,
+    "frontendUrl": "http://localhost:8080"
 }

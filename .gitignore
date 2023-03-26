@@ -14,6 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+.vscode
+
 # SSL certificate
 server.crt
 server.key
@@ -25,3 +27,5 @@ temp.sql
 temp/*
 certs/*
 priv-certs/*
+
+backend/main

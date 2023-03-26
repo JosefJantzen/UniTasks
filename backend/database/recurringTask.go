@@ -34,7 +34,7 @@ func (t *RecurringTask) merge(s *RecurringTask) {
 		t.Start = s.Start
 	}
 	if s.Ending != nil {
-		t.Start = s.Start
+		t.Ending = s.Ending
 	}
 	if s.Interval != 0 {
 		t.Interval = s.Interval
@@ -138,8 +138,10 @@ func (s *DBService) InsertRecurringTask(task RecurringTask) (uuid.UUID, error) {
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO recurring_tasks (name, interval, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+				"INSERT INTO recurring_tasks (name, start, ending, interval, description, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 				task.Name,
+				task.Start,
+				task.Ending,
 				task.Interval,
 				task.Description,
 				task.UserId,
@@ -162,8 +164,10 @@ func (s *DBService) UpdateRecurringTask(reqTask RecurringTask) error {
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE recurring_tasks SET name = $1, interval = $2, description = $3, updated_at=now() WHERE id = $4 AND user_id=$5",
+				"UPDATE recurring_tasks SET name = $1, start = $2, ending = $3, interval = $4, description = $5, updated_at=now() WHERE id = $6 AND user_id=$7",
 				task.Name,
+				task.Start,
+				task.Ending,
 				task.Interval,
 				task.Description,
 				task.Id,

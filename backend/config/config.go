@@ -8,11 +8,16 @@ import (
 	"strconv"
 )
 
+var JwtKeyBytes = []byte("SecretYouShouldHide") // Don't edit this value. It's just the fallback value. To change the key edit the config.js
+var FrontendUrl = "*"                           // Don't edit this value. It's just the fallback value. To change the url edit the config.js
+
 type Config struct {
 	DB           DB
 	Port         string
+	JwtKey       string
 	JwtExpireMin int
 	Debug        bool
+	FrontendUrl  string
 }
 
 func (c *Config) merge(s *Config) {
@@ -20,10 +25,18 @@ func (c *Config) merge(s *Config) {
 	if s.Port != "" {
 		c.Port = s.Port
 	}
+	if s.JwtKey != "" {
+		c.JwtKey = s.JwtKey
+		JwtKeyBytes = []byte(s.JwtKey)
+	}
 	if s.JwtExpireMin > c.JwtExpireMin {
 		c.JwtExpireMin = s.JwtExpireMin
 	}
 	c.Debug = s.Debug
+	if s.FrontendUrl != "" {
+		c.FrontendUrl = s.FrontendUrl
+		FrontendUrl = s.FrontendUrl
+	}
 }
 
 type DB struct {
@@ -100,9 +113,15 @@ func Read(file string) (*Config, error) {
 	if err := json.Unmarshal(buf, &config); err != nil {
 		return nil, err
 	}
-	config.Debug, err = strconv.ParseBool(os.Getenv("DEBUG"))
-	if err != nil {
-		config.Debug = false
+
+	v := os.Getenv("DEBUG")
+	if v == "" {
+		config.Debug = true
+	} else {
+		config.Debug, err = strconv.ParseBool(v)
+		if err != nil {
+			config.Debug = false
+		}
 	}
 
 	sampleConfig.merge(&config)

@@ -1,5 +1,18 @@
 version: '1.0'
 services:
+  uni-tasks-frontend:
+    image: ghcr.io/josefjantzen/uni-tasks-frontend
+    depends_on:
+      - uni-tasks-go
+    build: 
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: uni-tasks-frontend-server
+    hostname: frontend-server
+    networks:
+      - uni-tasks-net
+    ports:
+      - 8082:8080
   uni-tasks-go:
     image: ghcr.io/josefjantzen/uni-tasks-backend
     depends_on:

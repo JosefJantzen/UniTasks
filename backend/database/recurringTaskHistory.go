@@ -12,6 +12,7 @@ import (
 type RecurringTaskHistory struct {
 	Id              uuid.UUID  `json:"id"`
 	Description     string     `json:"desc"`
+	Due             time.Time  `json:"due"`
 	Done            bool       `json:"done"`
 	DoneAt          *time.Time `json:"doneAt"`
 	CreatedAt       time.Time  `json:"createdAt"`
@@ -41,6 +42,7 @@ func (s *DBService) GetRecurringTaskHistoryById(id uuid.UUID, uid uuid.UUID) (*R
 
 	var tId uuid.UUID
 	var desc string
+	var due time.Time
 	var done bool
 	var doneAt sql.NullTime
 	var createdAt time.Time
@@ -48,14 +50,14 @@ func (s *DBService) GetRecurringTaskHistoryById(id uuid.UUID, uid uuid.UUID) (*R
 	var userId uuid.UUID
 	var recurringTaskId uuid.UUID
 
-	if err := res.Scan(&tId, &desc, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
+	if err := res.Scan(&tId, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
 		return nil, err
 	}
 	var doneAtPointer *time.Time = nil
 	if doneAt.Valid {
 		doneAtPointer = &doneAt.Time
 	}
-	task := RecurringTaskHistory{Id: tId, Description: desc, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
+	task := RecurringTaskHistory{Id: tId, Description: desc, Due: due, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
 	return &task, nil
 }
 
@@ -72,6 +74,7 @@ func (s *DBService) GetRecurringTaskHistoriesByUser(id uuid.UUID) ([]RecurringTa
 	for res.Next() {
 		var tId uuid.UUID
 		var desc string
+		var due time.Time
 		var done bool
 		var doneAt sql.NullTime
 		var createdAt time.Time
@@ -79,14 +82,14 @@ func (s *DBService) GetRecurringTaskHistoriesByUser(id uuid.UUID) ([]RecurringTa
 		var userId uuid.UUID
 		var recurringTaskId uuid.UUID
 
-		if err := res.Scan(&tId, &desc, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
+		if err := res.Scan(&tId, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
 			return nil, err
 		}
 		var doneAtPointer *time.Time = nil
 		if doneAt.Valid {
 			doneAtPointer = &doneAt.Time
 		}
-		task := RecurringTaskHistory{Id: tId, Description: desc, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
+		task := RecurringTaskHistory{Id: tId, Description: desc, Due: due, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
@@ -109,6 +112,7 @@ func (s *DBService) GetRecurringTasksHistory(id uuid.UUID, uid uuid.UUID) ([]Rec
 	for res.Next() {
 		var tId uuid.UUID
 		var desc string
+		var due time.Time
 		var done bool
 		var doneAt sql.NullTime
 		var createdAt time.Time
@@ -116,14 +120,14 @@ func (s *DBService) GetRecurringTasksHistory(id uuid.UUID, uid uuid.UUID) ([]Rec
 		var userId uuid.UUID
 		var recurringTaskId uuid.UUID
 
-		if err := res.Scan(&tId, &desc, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
+		if err := res.Scan(&tId, &desc, &due, &done, &doneAt, &createdAt, &updatedAt, &userId, &recurringTaskId); err != nil {
 			return nil, err
 		}
 		var doneAtPointer *time.Time = nil
 		if doneAt.Valid {
 			doneAtPointer = &doneAt.Time
 		}
-		task := RecurringTaskHistory{Id: tId, Description: desc, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
+		task := RecurringTaskHistory{Id: tId, Description: desc, Due: due, Done: done, DoneAt: doneAtPointer, CreatedAt: createdAt, UpdatedAt: updatedAt, UserId: userId, RecurringTaskId: recurringTaskId}
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
@@ -134,8 +138,9 @@ func (s *DBService) InsertRecurringTaskHistory(task RecurringTaskHistory) (uuid.
 	err := crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			err := tx.QueryRow(
-				"INSERT INTO recurring_tasks_history (description, done, doneAt, user_id, recurring_task_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				"INSERT INTO recurring_tasks_history (description, due, done, done_at, user_id, recurring_task_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 				task.Description,
+				task.Due,
 				task.Done,
 				task.DoneAt,
 				task.UserId,
@@ -159,8 +164,9 @@ func (s *DBService) UpdateRecurringTaskHistory(reqTask RecurringTaskHistory) err
 	return crdb.ExecuteTx(context.Background(), s.db, nil,
 		func(tx *sql.Tx) error {
 			_, err := tx.Exec(
-				"UPDATE recurring_tasks_history SET description = $1, updated_at=now() WHERE id = $2 AND recurring_task_id=$3 AND user_id=$4",
+				"UPDATE recurring_tasks_history SET description = $1, due = $2, updated_at=now() WHERE id = $3 AND recurring_task_id=$4 AND user_id=$5",
 				task.Description,
+				task.Due,
 				task.Id,
 				task.RecurringTaskId,
 				task.UserId,

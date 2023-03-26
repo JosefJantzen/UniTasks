@@ -12,7 +12,7 @@
                     <va-icon name="mdi-schedule" /> 
                     <span style="margin-top: auto; margin-bottom: auto; margin-left: 0.5rem; font-size: small;"> {{ getDue(task)}} </span>
                 </div>
-                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click="finished(task)"/>
+                <va-button icon="mdi-check" round class="btn" style="margin-left: auto;" :disabled="task.done" @click.stop="finished(task)"/>
                 <va-button-dropdown
                     style="margin-left: 0.5rem;" 
                     preset="secondary" icon="more_vert" 

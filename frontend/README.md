@@ -1,6 +1,9 @@
-# uni-tasks
+# UniTasks frontend
+
+The frontend is written in Vue.js 3.
 
 ## Project setup
+Navigate into the frontend folder and run the following:
 ```
 npm install
 ```
@@ -19,6 +22,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

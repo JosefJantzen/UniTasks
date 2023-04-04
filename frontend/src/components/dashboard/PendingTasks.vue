@@ -2,10 +2,10 @@
     <va-card 
         v-for="(task, index) in this.$store.getters['getPendingTasks'].filter(task => !task.done || showDone)"
         :key="index"
-        :stripe="task.done ? true : false"
-        :color="late(task) && !task.done ? 'warning' : 'white'"
+        :stripe="task.done || late(task) ? true : false"
+        :stripe-color="late(task) && !task.done ? 'warning' : 'primary'"
     >
-        <div :class="late(task) && !task.done ? 'listItemPending hoverDonePending' : 'listItemPending hoverPending'" @click="show(task)">
+        <div class="listItemPending" @click="show(task)">
             <va-card-title>
                 <va-avatar v-if="task.recurring" size="40px" font-size="15px">{{ task.count }}/{{ task.countMax }}</va-avatar>
                 <va-avatar v-else icon="mdi-repeat_one" size="40px"/>
@@ -151,17 +151,13 @@ export default {
 
 <style>
 
-.listItemPending{
+.listItemPending {
   margin-top: 20px;
   cursor: pointer;
 }
 
-.hoverPending:hover {
+.listItemPending:hover {
     background-color: #d5e8e8;
-}
-
-.hoverDonePending:hover {
-    background-color: #f8ff00;
 }
 
 .dropBtnPending {

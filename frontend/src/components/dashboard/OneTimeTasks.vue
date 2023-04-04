@@ -2,10 +2,10 @@
     <va-card 
         v-for="(task, index) in this.$store.getters['tasks/getAll'].filter(task => !task.done || showDone)"
         :key="index"
-        :stripe="task.done ? true : false"
-        :color="late(task) && !task.done ? 'warning' : 'white'"
+        :stripe="task.done || late(task) ? true : false"
+        :stripe-color="late(task) && !task.done ? 'warning' : 'primary'"
     >
-        <div :class="late(task) && !task.done ? 'listItemOne hoverDoneOne' : 'listItemOne hoverOne'" @click="showView(task)">
+        <div class="listItemOne" @click="showView(task)">
             <va-card-title>
                 <h1 style="font-size: 20px;">{{ task.name }}</h1>
                 <div style="margin-left: auto; display: inline-block;" v-if="!task.done">
@@ -124,17 +124,13 @@ export default {
 
 <style>
 
-.listItemOne{
+.listItemOne {
   margin-top: 20px;
   cursor: pointer;
 }
 
-.hoverOne:hover {
+.listItemOne:hover {
     background-color: #d5e8e8;
-}
-
-.hoverDoneOne:hover {
-    background-color: #f8ff00;
 }
 
 .dropBtnOne {

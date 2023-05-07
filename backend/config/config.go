@@ -106,7 +106,10 @@ func Read(file string) (*Config, error) {
 
 	buf, err = ioutil.ReadFile(file)
 	if err != nil {
-		return nil, err
+		buf, err = ioutil.ReadFile("config.json")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var config Config
